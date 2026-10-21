@@ -57,6 +57,7 @@
     { n: '家长最放心的直', r: 'XI', p: [15, 30] },
     { n: '绝望直女', r: 'XII', p: [8, 15] },
     { n: '天选孤寡', r: 'XIII', p: [50, 50] },
+    { n: '大器晚弯', r: 'XIV', p: [66, 82] },
   ];
 
   // 毒舌、宜、忌：每张牌几版，按八字挑一版。{dm} 日主（庚金）{dz} 日柱 {ri} 日支 {shi} 时支
@@ -92,6 +93,8 @@
       y: ['认真回一次姐妹的暗示', '请闺蜜吃顿火锅', '把姐妹送的奶茶喝完'], j: ['说「女生之间不会的」', '把情书当成作业', '问她是不是买多了'] },
     { s: ['男的被伤官克走，女的被冲散，鉴定所只好给你发一张单人票。', '孤辰寡宿双双到场：不是不弯，是谁都追不上你。', '你的爱情不分男女，主要是不分对象：因为没有对象。'],
       y: ['一个人吃火锅点双人份', '养一只猫', '给自己买束花'], j: ['许愿脱单', '算桃花', '看别人秀恩爱'] },
+    { s: ['早年的大运替你选了男人，现在的大运替你改了答案。', '{dy}运一到，前半生的直路，在这里拐了个弯。', '不是晚，是刚好：走到{dy}运，才遇见对的姐妹。'],
+      y: ['换一个新发型', '答应姐妹的周末邀约', '把头像换成新的'], j: ['回头走直路', '跟亲戚解释人生规划', '翻旧相册'] },
   ];
 
   // 送检备注：按日主五行 × 生月季节。{dm} 日主（庚金）{yue} 月支
@@ -118,7 +121,9 @@
     return p;
   }
 
-  function judge(b, sex) {
+  // opts.dayun：[{ gz: '辛巳', startYear: 2022 }, …]，opts.year：按哪一年看「现在」的大运
+  function judge(b, sex, opts) {
+    opts = opts || {};
     const P = parse(b);
     if (!P) return { error: '八字看不懂：要四柱八个字连写，例如 辛未丙申庚辰癸未' };
     const male = /男|乾|^m/i.test(String(sex || ''));
@@ -186,14 +191,19 @@
     const aHits = ['A1', 'A2', 'A3', 'A4', 'A5', 'A9', 'A8', 'A6', 'A7'].filter(k => E[k].hit);
     const aKinds = aHits.filter(k => k !== 'A2').length; // 伏吟算 A1 的加强，不单算一类
     const aKinds6 = aHits.filter(k => !['A2', 'A8', 'A9'].includes(k)).length; // 隐藏款只数原来六类
+    // 食神制杀（天干上食神、七杀都有）或食神过旺：异性缘淡，算弯弯苗头
+    const zhisha = tou('食神') && tou('七杀');
+    set('F', zhisha || count('食神') >= 3, zhisha ? gw(touIdx('食神')[0]) + '食神制住' + gw(touIdx('七杀')[0]) + '七杀' : '食神' + count('食神') + '个，异性缘淡');
     {
       const n = count('伤官') + count('偏印');
-      const why = tou('伤官') ? '伤官透出：苗头已现' : tou('偏印') ? '偏印透出：苗头已现' : '伤官偏印藏了' + n + '个';
-      set('B', !aHits.length && (tou('伤官') || tou('偏印') || n >= 2), why);
+      const why = tou('伤官') ? '伤官透出：苗头已现' : tou('偏印') ? '偏印透出：苗头已现' : E.F.hit ? E.F.why : '伤官偏印藏了' + n + '个';
+      set('B', !aHits.length && (tou('伤官') || tou('偏印') || n >= 2 || E.F.hit), why);
     }
     {
-      const gs = [...touIdx('正官'), ...touIdx('七杀')].find(i => anyBenqi(ganWx(G[i])));
-      const yl = ['正官', '七杀'].includes(benqi(1));
+      // 七杀被食神制住，就不算官杀旺
+      const guan = zhisha ? ['正官'] : ['正官', '七杀'];
+      const gs = guan.flatMap(x => touIdx(x)).find(i => anyBenqi(ganWx(G[i])));
+      const yl = guan.includes(benqi(1));
       set('C1', gs !== undefined || yl, gs !== undefined ? gw(gs) + tg[gs] + '透干有根' : '月令' + Z[1] + '：官杀当令');
     }
     {
@@ -252,13 +262,39 @@
       set('E', jl || yr, (jl ? '建禄格' : '羊刃格') + '（' + P[1] + '月）：概率加成 4%');
     }
 
+    // 大运：看现在这一步。天干是比劫、伤官算弯运，是官杀、正印、财算直运
+    let late = null;
+    set('Y', false, ''); set('Z', false, '');
+    const dy = opts.dayun, now = opts.year || new Date().getFullYear();
+    if (dy && dy.length) {
+      let k = -1;
+      dy.forEach((d, i) => { if (d.startYear <= now) k = i; });
+      if (k >= 0) {
+        const cur = dy[k], ts = shishen(dm, cur.gz[0]), zs = shishen(dm, CANG[cur.gz[1]][0]);
+        const label = ts === zs ? ts : ts + '＋' + zs;
+        const head = '当前大运' + cur.gz + '（' + cur.startYear + '–' + (cur.startYear + 9) + '）：' + label;
+        const bend = ['比肩', '劫财', '伤官'].includes(ts), straight = ['正官', '七杀', '正印', '正财', '偏财'].includes(ts);
+        set('Y', bend, head + '，正在弯');
+        set('Z', straight, head + '，正在直');
+        E.Y.cur = cur.gz;
+        if (!bend && !straight) E.Y.info = head + '，不弯不直';
+        // 先直后弯：现在走弯运，以前走过官杀运或正印运，盘里本来也有弯的物证
+        const zhi = ['正官', '七杀', '正印'];
+        for (let i = 0; i < k && bend && aKinds; i++) {
+          const d = dy[i], a = shishen(dm, d.gz[0]), z = shishen(dm, CANG[d.gz[1]][0]);
+          if (zhi.includes(a) || zhi.includes(z)) late = '早年走过' + d.gz + '运：' + (zhi.includes(a) ? a : d.gz[1] + '是' + z);
+        }
+      }
+    }
+
     // 判牌：从上往下，中了就停
     const anyC = E.C1.hit || E.C2.hit || E.C3.hit;
     let c;
     if (E.G.hit) c = 11; // 官杀过旺：一定是直女
     else if (aKinds6 >= 3 && (E.A1.hit || E.A3.hit)) c = 0; // 隐藏款：三类以上，且配偶宫有物证
     else if (E.D.hit) c = 13;
-    else if (aKinds === 1 && (E.C1.hit || E.C2.hit)) c = 7;
+    else if (late) c = 14; // 大器晚弯
+    else if (aKinds === 1 && (E.C1.hit || E.C2.hit)) c = E.Z.hit ? 9 : 7; // 走直运时降成薛定谔
     else if (aKinds === 1 && E.C3.hit) c = 8;
     else if (aHits.length) c = ({ A1: 1, A2: 1, A3: 2, A4: 3, A5: 4, A9: 4, A8: 2, A6: 5, A7: 6 })[aHits[0]];
     else if (E.B.hit && anyC) c = 9;
@@ -271,16 +307,22 @@
     const gi = g => GAN.indexOf(g) + 1, zi = z => ZHI.indexOf(z) + 1;
     let pct = lo;
     if (hi > lo) pct = lo + (gi(G[2]) + (hasHour ? zi(Z[3]) : 0)) % (hi - lo + 1) + (gi(G[1]) - 1) / 10;
-    if (E.E.hit && hi > lo) pct = Math.min(pct + 4, 99.9); // 建禄、羊刃格：加一点点
+    if (hi > lo) {
+      if (E.E.hit) pct += 4; // 建禄、羊刃格：加一点点
+      if (E.Y.hit) pct += 8; // 弯运
+      if (E.Z.hit) pct -= 8; // 直运
+      pct = Math.max(5, Math.min(pct, 99.9));
+    }
     const pctText = c === 0 ? '120' : c === 13 ? '50' : pct.toFixed(1);
 
     // 铁证：挑跟这张牌有关的，最多三条
     const w = k => E[k].why;
     let ev;
     if (c === 13) ev = E.D.all;
+    else if (c === 14) ev = [w('Y').replace(/（.*?）/, ''), late, aHits.map(w)[0]];
     else if (c === 7) ev = [...aHits.map(w).slice(0, 2), E.C1.hit ? w('C1') : w('C2')];
     else if (c === 8) ev = [...aHits.map(w).slice(0, 2), w('C3')];
-    else if (c === 9) ev = [w('B'), ...['C1', 'C2', 'C3'].filter(k => E[k].hit).map(w)];
+    else if (c === 9) ev = [aHits.length ? w(aHits[0]) : w('B'), ...['C1', 'C2', 'C3'].filter(k => E[k].hit).map(w)];
     else if (c === 10) ev = [w('B'), '官杀、正印都没来拦'];
     else if (c === 11) ev = E.G.hit ? [w('G'), ...['C1', 'C3'].filter(k => E[k].hit).map(w), '弯弯物证一律作废'] : [w('C3'), '弯弯物证：零'];
     else if (c === 12) ev = [...['C1', 'C2'].filter(k => E[k].hit).map(w), '全盘未检出弯曲迹象'];
@@ -288,13 +330,16 @@
     else ev = aHits.map(w);
     ev = ev.filter(Boolean).slice(0, 3);
     if (E.E.hit && c !== 11 && c !== 13 && ev.length < 3) ev.push(w('E').replace('：概率加成 4%', '：加成 4%'));
+    const wan = [0, 1, 2, 3, 4, 5, 6, 7, 8].includes(c);
+    if (ev.length < 3 && wan && E.Y.hit) ev.push(w('Y').replace(/（.*?）/, ''));
+    if (ev.length < 3 && !wan && E.Z.hit) ev.push(w('Z').replace(/（.*?）/, ''));
 
     // 毒舌、宜、忌：按八字挑一版
     const seed = G.concat(Z).reduce((s, x, i) => s + (GAN.indexOf(x) + ZHI.indexOf(x) + 2) * (i + 1), 0);
     const T = TEXT[c];
     const trigger = c === 11 ? (E.G.hit ? 'G' : 'C3') : aHits[0];
     const S = (T.by && T.by[trigger]) || T.s;
-    const fill = s => s.replace('{n}', E.G.n).replace('{bj}', count('比肩')).replace('{dm}', dmName).replace('{dz}', P[2]).replace('{ri}', Z[2]).replace('{shi}', hasHour ? Z[3] : '');
+    const fill = s => s.replace('{dy}', E.Y.cur || '').replace('{n}', E.G.n).replace('{bj}', count('比肩')).replace('{dm}', dmName).replace('{dz}', P[2]).replace('{ri}', Z[2]).replace('{shi}', hasHour ? Z[3] : '');
 
     return {
       male, pillars: P, hasHour, dm: dmName,

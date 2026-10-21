@@ -261,6 +261,7 @@ body {
 <div class="taskbar"><span class="start">✦ START</span><span class="tab" id="tab1">拉拉鉴定所.exe</span><span class="tab extra hidden" id="tab2">鉴定牌.exe</span><span class="clock" id="clock"></span></div>
 
 <script src="html2canvas.min.js"></script>
+<script src="bazi-core.js"></script>
 <script src="lala.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -271,7 +272,7 @@ const b = (q.get('b') || '').trim();
 const EV_NAMES = [
   ['A1', '配偶宫＝性宫'], ['A2', '日时伏吟'], ['A3', '配偶宫坐姐妹'], ['A4', '沐浴桃花'],
   ['A5', '伤官当道'], ['A9', '比肩扛杀'], ['A8', '比肩过强'], ['A6', '偏印孤高'], ['A7', '财旺无官'],
-  ['E', '建禄羊刃'], ['B', '弯弯苗头'],
+  ['E', '建禄羊刃'], ['F', '食神制杀'], ['B', '弯弯苗头'], ['Y', '大运弯运'], ['Z', '大运直运'],
   ['C1', '官杀旺'], ['G', '官杀过旺'], ['C2', '性宫合官杀'], ['C3', '正印坐镇'], ['D', '孤寡三件套'],
 ];
 
@@ -305,8 +306,26 @@ function showHome() {
 }
 
 /* ---------- 结果页 ---------- */
+// 大运：按八个字在 1960–2015 年里反推出生日子（这几十年里只有一个），再用谷雨八字插件的排盘引擎排大运
+function dayunOf(bz) {
+  try {
+    if (!window.BaziCore) return null;
+    const P = Lala.parse(bz);
+    if (!P) return null;
+    const hours = P.length === 4 ? [P[3]] : [...Lala.ZHI].map((z, i) => Lala.GAN[((Lala.GAN.indexOf(P[2][0]) % 5) * 2 + i) % 10] + z);
+    for (const h of hours) {
+      const o = BaziCore.reverseFourPillars(P[0], P[1], P[2], h, { startYear: 1960, endYear: 2015 })[0];
+      if (!o) continue;
+      const c = BaziCore.computeChart({ clock: { y: o.y, m: o.m, d: o.d, hh: o.hh, mi: o.mi }, gender: '坤', trueSolar: false });
+      return c.daYun.map(d => ({ gz: d.ganZhi, startYear: d.startYear }));
+    }
+  } catch (e) {}
+  return null;
+}
+
 function showResult() {
-  const r = Lala.judge(b, '女');
+  const dy = dayunOf(b);
+  const r = Lala.judge(b, '女', { dayun: dy, year: new Date().getFullYear() });
   if (r.error) { showHome(); $('err').textContent = '链接里的八字看不懂，请在上面重新选一次'; return; }
   $('result').classList.remove('hidden');
   $('tab1').textContent = '鉴定报告.exe';
@@ -320,7 +339,8 @@ function showResult() {
   if (note) $('note').textContent = note; else $('noteWrap').classList.add('hidden');
   $('evlist').innerHTML = EV_NAMES.map(([k, n]) => {
     const e = r.evidence[k];
-    return '<li class="' + (e.hit ? 'hit' : '') + '"><span class="mk">' + (e.hit ? '✓' : '') + '</span><span class="nm">' + n + '</span><span class="why">' + esc(e.why || '未检出') + '</span></li>';
+    const why = e.why || e.info || (k === 'Y' && !dy ? '1960–2015 年里找不到这个八字，没排大运' : '未检出');
+    return '<li class="' + (e.hit ? 'hit' : '') + '"><span class="mk">' + (e.hit ? '✓' : '') + '</span><span class="nm">' + n + '</span><span class="why">' + esc(why) + '</span></li>';
   }).join('');
 
   const card = r.cardInfo, c = r.card;
@@ -358,7 +378,7 @@ function showResult() {
     lis.forEach(li => li.classList.add('on'));
     $('verdict').textContent = verdict; $('verdict').classList.add('on');
     const f = $('flipper');
-    $('stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!q.has('open')) $('stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
     f.classList.remove('closed');
     setTimeout(() => { f.classList.add('done'); $('acts').classList.remove('hidden'); }, 1150);
   };
