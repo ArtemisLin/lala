@@ -66,10 +66,12 @@
     { s: ['配偶宫{ri}、性宫{shi}，长得一模一样，这盘的弯度，量角器量不出来。', '{ri}{shi}相见，配偶宫和性宫穿了情侣装。', '一圈又一圈，弯得很有规律，像极了夏天的蚊香。'],
       y: ['去游乐园坐旋转木马', '把头像换成情侣头像', '买一盘蚊香留作纪念'], j: ['走直线', '说「我是直的」', '坐直行电梯'] },
     { s: ['{dz}日，配偶宫坐着比肩，你未来的对象，现在可能还是你的闺蜜。', '配偶宫里坐着一个和你一模一样的姐妹，你品，你细品。', '比肩坐镇配偶宫：掰弯闺蜜，你只需要一个周末。'],
+      by: { A8: ['比肩{bj}个，姐妹成群：你身边从来不缺姐妹，缺的是捅破那层窗户纸。', '比肩扎堆的盘：闺蜜群里聊着聊着，就聊成了一对。', '姐妹多到能组一支球队，迟早有一个会变成你的人。'] },
       y: ['约闺蜜看一场电影', '和闺蜜合买一对耳环', '帮闺蜜挑一支口红'], j: ['给闺蜜介绍男朋友', '说「我们只是朋友」', '让闺蜜一个人回家'] },
     { s: ['{dm}坐沐浴，桃花开得满街都是，可惜只开给女生。', '沐浴是桃花，你的桃花自带滤镜：只对女生可见。', '走在路上回头看你的都是女生，男生只配帮你们拍照。'],
       y: ['去女生多的咖啡店坐坐', '收下姐妹塞来的小纸条', '今天出门化个全妆'], j: ['一次回所有姐妹的消息', '解释「我对你没那个意思」', '素颜见暗恋你的姐妹'] },
     { s: ['伤官当道，官星见了你都要绕路走。', '伤官一出手，男人就退场，姐妹，刀收一收。', '这把刀磨了二十多年，不是为了砍男人，是男人自己不敢靠近。'],
+      by: { A9: ['七杀刚到门口，比肩就把它挡了回去：男人连你家门都进不来。', '比肩扛杀，姐妹们站成一排，替你把男人挡在外面。', '七杀想靠近，先过比肩这一关，至今没人过关。'] },
       y: ['报名一节拳击课', '带女朋友去吃烤肉', '一个人把柜子搬上楼'], j: ['给男同事好脸色', '回前任的消息', '让男生帮你拧瓶盖'] },
     { s: ['偏印当头，主流的路你一步都不想走，主流的恋爱也是。', '偏印孤高：别人排队的地方，你连看都不看一眼。', '小众到这个程度，你的爱情也是限量款。'],
       y: ['去 livehouse 听一场乐队', '染一缕挑染', '逛一家没人知道的书店'], j: ['随大流', '去相亲角', '听长辈的恋爱建议'] },
@@ -84,6 +86,7 @@
     { s: ['自己不一定弯，但嗑别人的百合，你能嗑到凌晨三点。', '全场的百合 CP，都靠你养活。', '苗头已现，但你更喜欢坐在第一排看别人谈。'],
       y: ['给全场姐妹拉一次 CP', '追一部百合剧', '在 CP 超话签到'], j: ['只看不说', '把 CP 嗑到自己身上', '拆别人的 CP'] },
     { s: ['正印坐镇，相亲角的阿姨看了你的盘，当场要了你的微信。', '标准得像教科书，爸妈看了都想给鉴定所送锦旗。', '你的盘写着：根正苗红，直得让人放心。'],
+      by: { G: ['官杀{n}个，追你的人能从相亲角排到地铁站。', '官杀扎堆：男人缘好到爸妈每周都在帮你挑女婿。', '这么多官杀，鉴定所只能宣布：直得明明白白，家长特别放心。'] },
       y: ['回家吃一顿饭', '给妈妈发一个红包', '陪长辈逛一次公园'], j: ['带女朋友回家', '让家长看到这张牌', '错过相亲'] },
     { s: ['姐妹暗示了你三年，你以为她只是眼睛不舒服。', '鉴定所翻遍了你的盘，连一根弯的头发丝都没找到。', '女生给你送奶茶，你问她是不是买多了。'],
       y: ['认真回一次姐妹的暗示', '请闺蜜吃顿火锅', '把姐妹送的奶茶喝完'], j: ['说「女生之间不会的」', '把情书当成作业', '问她是不是买多了'] },
@@ -174,8 +177,15 @@
       const n = count('正财') + count('偏财');
       set('A7', !tou('正官') && !tou('七杀') && n >= 4, '官杀不透，财星' + n + '个');
     }
-    const aHits = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7'].filter(k => E[k].hit);
+    set('A8', count('比肩') >= 3, '比肩' + count('比肩') + '个，姐妹成群');
+    {
+      const b = touIdx('比肩')[0], k = touIdx('七杀')[0];
+      set('A9', b !== undefined && k !== undefined, gw(b ?? 0) + '比肩扛住' + gw(k ?? 0) + '七杀');
+    }
+    // 顺序就是判牌时的优先顺序
+    const aHits = ['A1', 'A2', 'A3', 'A4', 'A5', 'A9', 'A8', 'A6', 'A7'].filter(k => E[k].hit);
     const aKinds = aHits.filter(k => k !== 'A2').length; // 伏吟算 A1 的加强，不单算一类
+    const aKinds6 = aHits.filter(k => !['A2', 'A8', 'A9'].includes(k)).length; // 隐藏款只数原来六类
     {
       const n = count('伤官') + count('偏印');
       const why = tou('伤官') ? '伤官透出：苗头已现' : tou('偏印') ? '偏印透出：苗头已现' : '伤官偏印藏了' + n + '个';
@@ -229,14 +239,28 @@
       if (hit) E.D.all = [d1why, '伤官克夫', d3why];
     }
 
+    {
+      // 只数盘面上看得见的：天干＋地支本气
+      const n = tg.filter(t => t === '正官' || t === '七杀').length + cg.filter(l => ['正官', '七杀'].includes(l[0].ss)).length;
+      set('G', n >= 3, '官杀透出' + n + '个，异性缘爆棚');
+      E.G.n = n;
+    }
+    {
+      const LU = { 甲: '寅', 乙: '卯', 丙: '巳', 丁: '午', 戊: '巳', 己: '午', 庚: '申', 辛: '酉', 壬: '亥', 癸: '子' };
+      const REN = { 甲: '卯', 丙: '午', 戊: '午', 庚: '酉', 壬: '子' }; // 羊刃格只看阳干
+      const jl = LU[dm] === Z[1], yr = REN[dm] === Z[1];
+      set('E', jl || yr, (jl ? '建禄格' : '羊刃格') + '（' + P[1] + '月）：概率加成 4%');
+    }
+
     // 判牌：从上往下，中了就停
     const anyC = E.C1.hit || E.C2.hit || E.C3.hit;
     let c;
-    if (aKinds >= 3 && (E.A1.hit || E.A3.hit)) c = 0; // 隐藏款：三类以上，且配偶宫有物证
+    if (E.G.hit) c = 11; // 官杀过旺：一定是直女
+    else if (aKinds6 >= 3 && (E.A1.hit || E.A3.hit)) c = 0; // 隐藏款：三类以上，且配偶宫有物证
     else if (E.D.hit) c = 13;
     else if (aKinds === 1 && (E.C1.hit || E.C2.hit)) c = 7;
     else if (aKinds === 1 && E.C3.hit) c = 8;
-    else if (aHits.length) c = ({ A1: 1, A2: 1, A3: 2, A4: 3, A5: 4, A6: 5, A7: 6 })[aHits[0]];
+    else if (aHits.length) c = ({ A1: 1, A2: 1, A3: 2, A4: 3, A5: 4, A9: 4, A8: 2, A6: 5, A7: 6 })[aHits[0]];
     else if (E.B.hit && anyC) c = 9;
     else if (E.B.hit) c = 10;
     else if (E.C3.hit) c = 11;
@@ -247,6 +271,7 @@
     const gi = g => GAN.indexOf(g) + 1, zi = z => ZHI.indexOf(z) + 1;
     let pct = lo;
     if (hi > lo) pct = lo + (gi(G[2]) + (hasHour ? zi(Z[3]) : 0)) % (hi - lo + 1) + (gi(G[1]) - 1) / 10;
+    if (E.E.hit && hi > lo) pct = Math.min(pct + 4, 99.9); // 建禄、羊刃格：加一点点
     const pctText = c === 0 ? '120' : c === 13 ? '50' : pct.toFixed(1);
 
     // 铁证：挑跟这张牌有关的，最多三条
@@ -257,22 +282,25 @@
     else if (c === 8) ev = [...aHits.map(w).slice(0, 2), w('C3')];
     else if (c === 9) ev = [w('B'), ...['C1', 'C2', 'C3'].filter(k => E[k].hit).map(w)];
     else if (c === 10) ev = [w('B'), '官杀、正印都没来拦'];
-    else if (c === 11) ev = [w('C3'), '弯弯物证：零'];
+    else if (c === 11) ev = E.G.hit ? [w('G'), ...['C1', 'C3'].filter(k => E[k].hit).map(w), '弯弯物证一律作废'] : [w('C3'), '弯弯物证：零'];
     else if (c === 12) ev = [...['C1', 'C2'].filter(k => E[k].hit).map(w), '全盘未检出弯曲迹象'];
-    else if (c === 4) ev = E.A5.all.concat(aHits.filter(k => k !== 'A5').map(w));
+    else if (c === 4 && E.A5.hit) ev = E.A5.all.concat(aHits.filter(k => k !== 'A5').map(w));
     else ev = aHits.map(w);
     ev = ev.filter(Boolean).slice(0, 3);
+    if (E.E.hit && c !== 11 && c !== 13 && ev.length < 3) ev.push(w('E').replace('：概率加成 4%', '：加成 4%'));
 
     // 毒舌、宜、忌：按八字挑一版
     const seed = G.concat(Z).reduce((s, x, i) => s + (GAN.indexOf(x) + ZHI.indexOf(x) + 2) * (i + 1), 0);
     const T = TEXT[c];
-    const fill = s => s.replace('{dm}', dmName).replace('{dz}', P[2]).replace('{ri}', Z[2]).replace('{shi}', hasHour ? Z[3] : '');
+    const trigger = c === 11 ? (E.G.hit ? 'G' : 'C3') : aHits[0];
+    const S = (T.by && T.by[trigger]) || T.s;
+    const fill = s => s.replace('{n}', E.G.n).replace('{bj}', count('比肩')).replace('{dm}', dmName).replace('{dz}', P[2]).replace('{ri}', Z[2]).replace('{shi}', hasHour ? Z[3] : '');
 
     return {
       male, pillars: P, hasHour, dm: dmName,
       tg, cg, xingyun, zizuo, evidence: E,
       card: c, cardInfo: CARDS[c], pct: pctText,
-      quote: fill(T.s[seed % T.s.length]),
+      quote: fill(S[seed % S.length]),
       yi: T.y[(seed + 1) % T.y.length], ji: T.j[(seed + 2) % T.j.length],
       ev,
       note: NOTE[WX[ganWx(dm)]][season(Z[1])].replace('{dm}', dmName).replace('{yue}', Z[1]),
