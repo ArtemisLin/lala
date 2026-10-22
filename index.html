@@ -123,48 +123,68 @@ body {
 .back { position: absolute; inset: 0; transform: rotateY(180deg); }
 .front .card, .back .card { position: absolute; top: 0; left: 0; }
 
-.card { width: 720px; height: 1234px; transform-origin: top left; background: var(--cream); border-radius: 30px; overflow: hidden; box-shadow: 0 18px 50px rgba(226, 0, 122, .16); }
+.card { width: 720px; height: 1280px; transform-origin: top left; background: var(--cream); border-radius: 30px; overflow: hidden; box-shadow: 0 18px 50px rgba(226, 0, 122, .16); }
 .card .frame { position: absolute; inset: 14px; border: 3px solid var(--line); border-radius: 20px; pointer-events: none; }
 .card .frame::after { content: ''; position: absolute; inset: 6px; border: 1.5px solid var(--line); border-radius: 14px; }
-.card .tb { position: absolute; top: 34px; left: 38px; right: 38px; height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--bar); border: 2.5px solid var(--line); border-radius: 12px; font-family: var(--pixel); font-size: 21px; color: var(--rose); }
+.card .tb { position: absolute; top: 32px; left: 38px; right: 38px; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--bar); border: 2.5px solid var(--line); border-radius: 12px; font-family: var(--pixel); font-size: 20px; color: var(--rose); }
 .card .tb .btns { display: flex; gap: 7px; }
-.card .tb .btns i { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 4px; background: var(--cream2); }
-.card .art { position: absolute; top: 98px; left: 58px; width: 604px; height: 604px; border-radius: 302px 302px 18px 18px; overflow: hidden; border: 3px solid var(--line); background: linear-gradient(160deg, #fde3ec, #fff3df); box-shadow: 0 0 0 6px var(--cream2), 0 0 0 8px var(--pink); }
+.card .tb .btns i { width: 19px; height: 19px; border: 2px solid var(--line); border-radius: 4px; background: var(--cream2); }
+.card .art { position: absolute; top: 94px; left: 104px; width: 512px; height: 512px; border-radius: 256px 256px 18px 18px; overflow: hidden; border: 3px solid var(--line); background: linear-gradient(160deg, #fde3ec, #fff3df); box-shadow: 0 0 0 6px var(--cream2), 0 0 0 8px var(--pink); }
 .card .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .art .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--smiley); font-size: 40px; color: var(--line); }
-.card .st1 { position: absolute; top: 72px; left: 20px; width: 64px; z-index: 2; }
-.card .st2 { position: absolute; top: 560px; right: 22px; width: 48px; z-index: 2; }
-.card .badge { position: absolute; top: 88px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 3px 18px; border-radius: 14px; background: var(--gold); color: #fff; font-family: var(--pixel); font-size: 18px; display: none; }
-.seal { position: absolute; top: 640px; right: 30px; z-index: 3; width: 104px; height: 104px; border: 3px solid var(--rose); border-radius: 50%; color: var(--rose); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-14deg); background: rgba(255, 250, 242, .92); font-weight: 700; line-height: 1.15; }
+.card .st1 { position: absolute; top: 72px; left: 58px; width: 60px; z-index: 2; }
+.card .st2 { position: absolute; top: 452px; right: 62px; width: 44px; z-index: 2; }
+.card .badge { position: absolute; top: 84px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 3px 18px; border-radius: 14px; background: var(--gold); color: #fff; font-family: var(--pixel); font-size: 18px; display: none; }
+.seal { position: absolute; top: 532px; right: 66px; z-index: 3; width: 98px; height: 98px; border: 3px solid var(--rose); border-radius: 50%; color: var(--rose); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-14deg); background: rgba(255, 250, 242, .92); font-weight: 700; line-height: 1.15; }
 .seal::before { content: ''; position: absolute; inset: 5px; border: 1px solid var(--rose); border-radius: 50%; }
-.seal b { font-size: 19px; letter-spacing: 1px; }
-.seal i { font-style: normal; font-size: 13px; letter-spacing: 1px; margin-top: 3px; }
+.seal b { font-size: 18px; letter-spacing: 1px; }
+.seal i { font-style: normal; font-size: 12px; letter-spacing: 1px; margin-top: 3px; }
 
-.lower { position: absolute; top: 724px; left: 46px; right: 46px; bottom: 34px; display: flex; flex-direction: column; }
-.ttl { text-align: center; font-family: var(--smiley); color: var(--ink); white-space: nowrap; line-height: 1.2; text-shadow: 3px 3px 0 var(--pink); }
+.lower { position: absolute; top: 618px; left: 40px; right: 40px; bottom: 34px; display: flex; flex-direction: column; }
+.ttl-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.ttl { font-family: var(--smiley); color: var(--ink); white-space: nowrap; line-height: 1.2; text-shadow: 3px 3px 0 var(--pink); }
 .ttl small { font-size: .5em; color: var(--soft); margin-left: 4px; text-shadow: none; }
+.rar { flex: none; font-family: var(--pixel); font-size: 20px; color: #fff; padding: 3px 12px 2px; border-radius: 10px; letter-spacing: 1px; transform: rotate(-4deg); box-shadow: 0 3px 0 rgba(33, 29, 54, .18); }
+.rar.UR { background: linear-gradient(100deg, #ff9ccd, #d9c2ff, #9fd6ff, #ffe08a); color: var(--ink); }
+.rar.SSR { background: linear-gradient(100deg, #e0a100, #ffd66b 50%, #e0a100); }
+.rar.SR { background: var(--purple); }
+.rar.R { background: var(--rose); }
+.rar.N { background: #8d88a0; }
 .pct { display: flex; align-items: baseline; justify-content: center; gap: 12px; }
-.pct .lab { font-family: var(--pixel); font-size: 21px; color: var(--soft); }
-.pct .val { font-family: var(--smiley); font-size: 70px; color: var(--rose); line-height: 1.05; text-shadow: 3px 3px 0 var(--rose-soft); }
-.pct .val sup { font-size: 30px; margin-left: 2px; }
-.pct .sep { font-size: 30px; color: var(--line); }
-.quote { margin: 8px 14px 0; text-align: center; line-height: 1.5; color: var(--ink); }
+.pct .lab { font-family: var(--pixel); font-size: 20px; color: var(--soft); }
+.pct .val { font-family: var(--smiley); font-size: 64px; color: var(--rose); line-height: 1.05; text-shadow: 3px 3px 0 var(--rose-soft); }
+.pct .val sup { font-size: 28px; margin-left: 2px; }
+.pct .sep { font-size: 28px; color: var(--line); }
+.odds { text-align: center; font-family: var(--pixel); font-size: 16px; color: var(--soft); margin-top: 2px; }
+.odds b { color: var(--rose); font-weight: 400; }
+.quote { margin: 8px 10px 0; text-align: center; line-height: 1.45; color: var(--ink); }
 .quote::before, .quote::after { color: var(--line); }
 .quote::before { content: '「'; }
 .quote::after { content: '」'; }
-.bot { margin-top: auto; padding-top: 12px; border-top: 2px dashed var(--pink); display: grid; grid-template-columns: minmax(0, 1fr) 286px; gap: 16px; }
-.bot h4 { font-family: var(--pixel); font-size: 16px; color: var(--rose); font-weight: 400; margin-bottom: 6px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 14px; padding-top: 12px; border-top: 2px dashed var(--pink); }
+.two h4 { font-family: var(--pixel); font-size: 16px; color: var(--rose); font-weight: 400; margin-bottom: 6px; }
+.st-row { display: grid; grid-template-columns: 60px minmax(0, 1fr) 34px; align-items: center; gap: 8px; height: 29px; }
+.st-row .k { font-family: var(--pixel); font-size: 16px; color: var(--soft); white-space: nowrap; }
+.st-row .bar { height: 13px; border: 1.5px solid var(--line); border-radius: 7px; background: var(--cream2); overflow: hidden; }
+.st-row .bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff9ccd, var(--rose)); }
+.st-row .v { font-family: var(--pixel); font-size: 16px; color: var(--rose); text-align: right; }
+.tc-row { display: flex; gap: 8px; font-size: 16.5px; line-height: 1.45; margin-bottom: 7px; color: var(--ink); }
+.tc-row .k { flex: none; font-family: var(--pixel); font-size: 13.5px; color: #fff; background: var(--line); border-radius: 6px; padding: 0 6px; height: 21px; line-height: 21px; margin-top: 1px; }
 .ev ul { list-style: none; }
-.ev li { font-size: 18.5px; line-height: 1.55; padding-left: 24px; position: relative; }
+.ev li { font-size: 17px; line-height: 1.6; padding-left: 20px; position: relative; }
 .ev li::before { content: '✦'; position: absolute; left: 0; color: var(--rose); }
-.yj .row { display: flex; gap: 10px; align-items: flex-start; font-size: 17.5px; line-height: 1.5; margin-bottom: 6px; }
-.yj .tag { flex: none; width: 28px; height: 28px; border-radius: 7px; color: #fff; font-family: var(--pixel); font-size: 17px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.yj .row { display: flex; gap: 8px; align-items: flex-start; font-size: 17px; line-height: 1.55; margin-bottom: 6px; }
+.yj .tag { flex: none; width: 24px; height: 24px; border-radius: 6px; color: #fff; font-family: var(--pixel); font-size: 15px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
 .yj .yi { background: var(--purple); }
 .yj .ji { background: var(--rose); }
-.match { margin-top: 12px; height: 42px; border-radius: 21px; border: 2px solid var(--line); background: var(--cream2); color: var(--ink); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 17.5px; }
+.bottom { margin-top: auto; display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 14px; align-items: end; }
+.match { min-height: 40px; border-radius: 20px; border: 2px solid var(--line); background: var(--cream2); color: var(--ink); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; font-size: 15.5px; padding: 4px 10px; text-align: center; }
 .match em { font-style: normal; font-family: var(--pixel); color: var(--rose); margin-right: 4px; }
 .match b { color: var(--rose); }
-.foot { margin-top: 8px; text-align: center; font-family: var(--pixel); font-size: 15px; color: var(--soft); letter-spacing: 1px; white-space: pre; }
+.foot { margin-top: 8px; text-align: center; font-family: var(--pixel); font-size: 14px; color: var(--soft); letter-spacing: 1px; white-space: pre; }
+.qr { text-align: center; }
+.qr img { width: 96px; height: 96px; display: block; margin: 0 auto; border: 2px solid var(--line); border-radius: 10px; padding: 3px; background: #fff; }
+.qr span { display: block; font-family: var(--pixel); font-size: 13px; color: var(--rose); margin-top: 4px; white-space: nowrap; }
 
 /* 隐藏款：金色 */
 .card.gold { background: #fff6dc; }
@@ -239,6 +259,8 @@ body {
       <div id="noteWrap"><div class="label">送检备注</div><div class="note" id="note"></div></div>
       <div class="label">物证清单</div>
       <ul class="evlist" id="evlist"></ul>
+      <div class="label">你的天菜</div>
+      <div class="note" id="tcNote"></div>
       <div class="verdict" id="verdict"></div>
     </div>
   </section>
@@ -255,15 +277,22 @@ body {
           <img class="st2" src="ui/star-w.png" alt="">
           <div class="seal"><b>鉴定专用</b><i>仅供娱乐</i></div>
           <div class="lower">
-            <div class="ttl" id="ttl"></div>
+            <div class="ttl-row"><div class="ttl" id="ttl"></div><span class="rar" id="rar"></span></div>
             <div class="pct" id="pct"></div>
+            <div class="odds" id="odds"></div>
             <div class="quote" id="quote"></div>
-            <div class="bot">
+            <div class="two">
+              <div><h4>属性面板</h4><div id="stats"></div></div>
+              <div><h4>你的天菜</h4><div id="tc"></div></div>
+            </div>
+            <div class="two">
               <div class="ev"><h4>命盘铁证</h4><ul id="ev"></ul></div>
               <div class="yj"><h4>今日黄历</h4><div id="yj"></div></div>
             </div>
-            <div class="match" id="match"></div>
-            <div class="foot" id="foot"></div>
+            <div class="bottom">
+              <div><div class="match" id="match"></div><div class="foot" id="foot"></div></div>
+              <div class="qr"><img src="ui/qr.png" alt="扫码测测你"><span>扫码测测你</span></div>
+            </div>
           </div>
         </div></div>
         <div class="back"><div class="card">
@@ -455,15 +484,23 @@ function showResult() {
   const ttl = $('ttl');
   ttl.innerHTML = esc(card.n) + (card.s ? '<small>' + esc(card.s) + '</small>' : '');
   const len = card.n.length + (card.s ? card.s.length * 0.5 : 0);
-  ttl.style.fontSize = Math.min(60, Math.floor(620 / len)) + 'px';
+  ttl.style.fontSize = Math.min(52, Math.floor(520 / len)) + 'px';
+  $('rar').textContent = r.rarity.tier; $('rar').className = 'rar ' + r.rarity.tier;
+  const per = Math.max(1, Math.round(r.rarity.p));
+  $('odds').innerHTML = c === 0 ? '隐藏款 · 每 100 个人里只有 <b>' + per + '</b> 个抽得到'
+    : r.rarity.p <= 6 ? '每 100 个人里只有 <b>' + per + '</b> 个抽到这张' : '每 100 个人里有 <b>' + per + '</b> 个抽到这张';
   $('pct').innerHTML = c === 13
     ? '<span class="lab">拉拉概率</span><span class="val">50<sup>%</sup></span><span class="sep">｜</span><span class="lab">脱单概率</span><span class="val">0<sup>%</sup></span>'
     : '<span class="lab">拉拉概率</span><span class="val">' + r.pct + '<sup>%</sup></span>';
   $('quote').textContent = r.quote;
-  $('quote').style.fontSize = (r.quote.length > 34 ? 21 : r.quote.length > 26 ? 23 : 25) + 'px';
-  $('ev').innerHTML = r.ev.map(x => '<li>' + esc(x) + '</li>').join('');
+  $('quote').style.fontSize = (r.quote.length > 30 ? 20 : 22) + 'px';
+  $('stats').innerHTML = r.stats.map(([k, v]) => '<div class="st-row"><span class="k">' + k + '</span><span class="bar"><i style="width:' + Math.min(100, v) + '%"></i></span><span class="v">' + (v >= 100 ? 'MAX' : v) + '</span></div>').join('');
+  const T = r.tiancai;
+  $('tc').innerHTML = [['她是', T.who], ['长相', T.look], ['遇见', T.meet], ['你们', T.mode]].map(([k, v]) => '<div class="tc-row"><span class="k">' + k + '</span><span>' + esc(v) + '</span></div>').join('');
+  $('tcNote').innerHTML = [['她是', T.who], ['长相', T.look], ['在哪遇见', T.meet], ['你们会', T.mode]].map(([k, v]) => '<b style="display:inline;color:var(--rose);font-family:var(--pixel)">' + k + '</b>　' + esc(v)).join('<br>');
+  $('ev').innerHTML = r.ev.slice(0, 2).map(x => '<li>' + esc(x) + '</li>').join('');
   $('yj').innerHTML = '<div class="row"><span class="tag yi">宜</span><span>' + esc(r.yi) + '</span></div><div class="row"><span class="tag ji">忌</span><span>' + esc(r.ji) + '</span></div>';
-  $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，你们可能很搭哦';
+  $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，可能很搭哦';
   $('foot').innerHTML = (q.get('name') ? '送检人 ' + esc(q.get('name').trim().slice(0, 10)) + '    ' : '') + '送检八字  ' + r.pillars.map(gz).join('  ');
 
   fit();
@@ -471,7 +508,7 @@ function showResult() {
 
   // 物证一条条亮出来，再翻牌
   const lis = [...$('evlist').children];
-  const verdict = c === 13 ? '鉴定完成：' + card.n + '，拉拉概率 50%，脱单概率 0%' : '鉴定完成：' + card.n + (card.s || '') + '，拉拉概率 ' + r.pct + '%';
+  const verdict = (c === 13 ? '鉴定完成：' + card.n + '，拉拉概率 50%，脱单概率 0%' : '鉴定完成：' + card.n + (card.s || '') + '，拉拉概率 ' + r.pct + '%') + '（' + r.rarity.tier + '）';
   let flipped = false;
   const flip = () => {
     if (flipped) return; flipped = true;
@@ -535,12 +572,12 @@ function showResult() {
   };
 }
 
-// 牌按 720×1234 设计：按栏宽和屏幕高度缩放
+// 牌按 720×1280（9:16）设计：按栏宽缩放
 function fit() {
   const w = Math.min(720, $('stage').clientWidth || 720);
   const k = w / 720;
   document.querySelectorAll('.card').forEach(el => { el.style.transform = 'scale(' + k + ')'; });
-  const H = 1234 * k + 'px', W = 720 * k + 'px';
+  const H = 1280 * k + 'px', W = 720 * k + 'px';
   for (const id of ['scene', 'flipper']) { $(id).style.height = H; $(id).style.width = W; }
 }
 </script>

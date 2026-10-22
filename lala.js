@@ -107,6 +107,18 @@
   };
   const season = z => '寅卯辰'.includes(z) ? '春' : '巳午未'.includes(z) ? '夏' : '申酉戌'.includes(z) ? '秋' : '冬';
 
+  // 你的天菜：看她自己的配偶宫（日支）——本气是什么十神、属什么五行，模糊地画出对象的样子
+  const TIANCAI = {
+    who: { 比肩: '同龄的搭子，跟你旗鼓相当', 劫财: '同龄的冤家，嘴上不饶人', 食神: '比你小的妹妹，软乎乎很会撒娇', 伤官: '比你小的妹妹，才华横溢还毒舌', 正财: '比你小一点，务实顾家会过日子',
+      偏财: '大方会玩的社交达人', 正官: '比你成熟的姐姐，正经靠谱', 七杀: '气场很强的姐姐，飒到你腿软', 正印: '比你大的姐姐，温柔会照顾人', 偏印: '神秘的姐姐，小众又有点玄' },
+    look: { 木: '高挑清瘦，文艺气质', 火: '明艳热情，笑起来很亮', 土: '温厚踏实，让人安心', 金: '利落飒爽，穿西装好看', 水: '温柔灵动，眼睛会说话' },
+    meet: { 子: '深夜的小酒馆', 丑: '图书馆的角落', 寅: '爬山徒步的路上', 卯: '花店或书店', 辰: '一场大型展会', 巳: '演唱会现场', 午: '健身房或球场', 未: '甜品店或烘焙课', 申: '出差的高铁上', 酉: '美甲店或首饰店', 戌: '猫咖或宠物医院', 亥: '海边旅行的时候' },
+    mode: { 比肩: '一起搞钱一起拼', 劫财: '又相爱又较劲', 食神: '一起吃遍整座城', 伤官: '吵架吵到笑场', 正财: '过日子过得很甜', 偏财: '说走就走去旅行', 正官: '纪念日一个都不会忘', 七杀: '她管着你，你还挺乐意', 正印: '她宠你像宠小孩', 偏印: '话不多，但特别懂对方' },
+  };
+  // 稀有度：1960–2015 年随机出生的三万个女命，各张牌抽到的比例（规则改了要重算）
+  const ODDS = [2.1, 3.2, 5.3, 4.9, 3.7, 1.5, 7.4, 9.1, 4.5, 17.5, 5.6, 18.7, 5.7, 3.1, 7.7];
+  const tierOf = (c, p) => c === 0 ? 'UR' : p <= 3 ? 'SSR' : p <= 6 ? 'SR' : p <= 10 ? 'R' : 'N';
+
   // 解析：'辛未丙申庚辰癸未'（八个字），没有时柱可以六个字
   function parse(b) {
     b = String(b || '').replace(/[\s,，、|]/g, '');
@@ -354,7 +366,25 @@
     const S = (T.by && T.by[trigger]) || T.s;
     const fill = s => s.replace('{dy}', E.Y.cur || '').replace('{n}', E.G.n).replace('{bj}', count('比肩')).replace('{dm}', dmName).replace('{dz}', P[2]).replace('{ri}', Z[2]).replace('{shi}', hasHour ? Z[3] : '');
 
+    // 天菜
+    const pz = Z[2], ps = shishen(dm, CANG[pz][0]), pw = WX[ganWx(CANG[pz][0])];
+    const tiancai = { who: TIANCAI.who[ps], look: TIANCAI.look[pw], meet: TIANCAI.meet[pz], mode: TIANCAI.mode[ps] };
+    // 属性面板：从盘里的十神数出来
+    const cap = v => Math.max(5, Math.min(99, Math.round(v)));
+    const tao = Z.filter(z => '子午卯酉'.includes(z)).length;
+    const jieN = tg.filter((t, i) => i > 0 && (t === '比肩' || t === '劫财')).length + cg.slice(1).reduce((n, l) => n + l.filter(x => x.ss === '比肩' || x.ss === '劫财').length, 0);
+    const shi = tou('食神') || tou('伤官');
+    const stats = [
+      ['弯度', c === 0 ? 100 : c === 13 ? 50 : Math.min(99, Math.round(pct))],
+      ['桃花', cap(28 + tao * 14 + (E.A4.hit ? 20 : 0) + (shi ? 8 : 0))],
+      ['姐妹缘', cap(22 + jieN * 13)],
+      ['掌控欲', cap(25 + count('七杀') * 12 + count('伤官') * 9 + (E.E.hit ? 12 : 0))],
+      ['搞钱力', cap(20 + (count('正财') + count('偏财')) * 12 + (shi ? 6 : 0))],
+    ];
+    const odds = ODDS[c] || 0;
+
     return {
+      tiancai, stats, rarity: { tier: tierOf(c, odds), p: odds },
       male, pillars: P, hasHour, dm: dmName,
       tg, cg, xingyun, zizuo, evidence: E,
       card: c, cardInfo: CARDS[c], pct: pctText,
