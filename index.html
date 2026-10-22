@@ -56,9 +56,22 @@ body {
 .how { color: var(--soft); font-size: 15px; line-height: 1.6; }
 .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; text-align: center; margin-top: 10px; }
 .picks .pos { font-family: var(--pixel); font-size: 15px; color: var(--soft); margin-bottom: 5px; }
-.picks select { font-family: var(--smiley); font-size: 24px; width: 100%; min-width: 0; height: 50px; padding: 0 2px; border-radius: 10px; border: 2px solid var(--line); background: var(--cream2); color: var(--ink); text-align: center; appearance: none; -webkit-appearance: none; cursor: pointer; }
-.picks select:focus { outline: 3px solid var(--rose-soft); }
-.picks select + select { margin-top: 8px; }
+.slot { display: block; width: 100%; height: 52px; border-radius: 10px; border: 2px solid var(--line); background: var(--cream2); color: var(--ink); font-family: var(--smiley); font-size: 26px; cursor: pointer; }
+.slot.empty { font-family: var(--pixel); font-size: 15px; color: #b3aec2; }
+.slot.on { border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
+.slot + .slot { margin-top: 8px; }
+.sheet { position: fixed; inset: 0; z-index: 20; }
+.sheet .mask { position: absolute; inset: 0; background: rgba(33, 29, 54, .35); }
+.sheet .panel { position: absolute; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -10px 30px rgba(226, 0, 122, .18); }
+.sheet .panel > .bar { border-radius: 13px 13px 0 0; }
+.sheet .x { cursor: pointer; font-family: var(--pixel); font-size: 18px; color: var(--rose); padding: 0 4px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opt { display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 12px; border: 2px solid var(--line); background: var(--cream2); cursor: pointer; }
+.opt b { font-family: var(--smiley); font-size: 30px; font-weight: 400; color: var(--ink); }
+.opt span { font-family: var(--pixel); font-size: 14px; color: var(--soft); }
+.opt.wide { grid-column: span 2; }
+.opt.wide b { font-family: var(--pixel); font-size: 17px; color: var(--rose); }
+.sheet .tip { font-size: 13.5px; color: var(--soft); text-align: center; margin-top: 10px; }
 .acts { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 .btn { font-family: var(--pixel); font-size: 19px; padding: 11px 28px; border-radius: 26px; border: 2.5px solid var(--rose); cursor: pointer; background: var(--rose); color: #fff; letter-spacing: 1px; text-decoration: none; box-shadow: 0 4px 0 #b30062; }
 .btn.big { width: 100%; font-size: 21px; padding: 13px 0; }
@@ -258,6 +271,14 @@ body {
   </div>
 </div>
 
+<div class="sheet hidden" id="sheet">
+  <div class="mask" id="sheetMask"></div>
+  <div class="win panel">
+    <div class="bar"><span id="sheetTitle"></span><span class="x" id="sheetX">关闭 ×</span></div>
+    <div class="body"><div class="grid2" id="sheetGrid"></div><p class="tip" id="sheetTip"></p></div>
+  </div>
+</div>
+
 <div class="taskbar"><span class="start">✦ START</span><span class="tab" id="tab1">拉拉鉴定所.exe</span><span class="tab extra hidden" id="tab2">鉴定牌.exe</span><span class="clock" id="clock"></span></div>
 
 <script src="html2canvas.min.js"></script>
@@ -283,24 +304,88 @@ tick(); setInterval(tick, 20000);
 if (!b) showHome();
 else showResult();
 
-/* ---------- 首页 ---------- */
+/* ---------- 首页：点格子，从底部弹出两列选项 ---------- */
 function showHome() {
   $('home').classList.remove('hidden');
   const cols = ['年柱', '月柱', '日柱', '时柱'];
-  $('picks').innerHTML = cols.map((c, i) =>
-    '<div><div class="pos">' + c + '</div>' +
-    '<select id="g' + i + '"><option value="">天干</option>' + (i === 3 ? '<option value="?">不知道</option>' : '') + [...Lala.GAN].map(x => '<option>' + x + '</option>').join('') + '</select>' +
-    '<select id="z' + i + '"><option value="">地支</option>' + (i === 3 ? '<option value="?">不知道</option>' : '') + [...Lala.ZHI].map(x => '<option>' + x + '</option>').join('') + '</select></div>'
-  ).join('');
+  const GAN = Lala.GAN, ZHI = Lala.ZHI;
+  const WX = '木火土金水';
+  const ganLab = g => (GAN.indexOf(g) % 2 ? '阴' : '阳') + WX[Math.floor(GAN.indexOf(g) / 2)];
+  const ZWX = '水土木木土火火土金金土水', SX = '鼠牛虎兔龙蛇马羊猴鸡狗猪';
+  const zhiLab = z => ZWX[ZHI.indexOf(z)] + ' · ' + SX[ZHI.indexOf(z)];
+  const pick = { g: ['', '', '', ''], z: ['', '', '', ''] };
+  const order = [['g', 0], ['z', 0], ['g', 1], ['z', 1], ['g', 2], ['z', 2], ['g', 3], ['z', 3]];
+
+  const draw = () => {
+    $('picks').innerHTML = cols.map((c, i) =>
+      '<div><div class="pos">' + c + '</div>' +
+      ['g', 'z'].map(t => {
+        const v = pick[t][i];
+        const txt = v === '?' ? '不知道' : v || (t === 'g' ? '天干' : '地支');
+        return '<button type="button" class="slot' + (v && v !== '?' ? '' : ' empty') + '" data-t="' + t + '" data-i="' + i + '">' + txt + '</button>';
+      }).join('') + '</div>'
+    ).join('');
+    $('picks').querySelectorAll('.slot').forEach(el => el.onclick = () => open(el.dataset.t, +el.dataset.i));
+  };
+
+  // 可选的字：阳干只配阳支、阴干只配阴支；年干定了，月干和月支要合五虎遁
+  const options = (t, i) => {
+    const other = t === 'g' ? pick.z[i] : pick.g[i];
+    let list = [...(t === 'g' ? GAN : ZHI)];
+    if (other && other !== '?') {
+      const par = (t === 'g' ? ZHI : GAN).indexOf(other) % 2;
+      list = list.filter(x => (t === 'g' ? GAN : ZHI).indexOf(x) % 2 === par);
+    }
+    if (i === 1 && pick.g[0]) {
+      const start = (GAN.indexOf(pick.g[0]) % 5) * 2 + 2; // 寅月的天干
+      const months = [...Array(12)].map((_, k) => GAN[(start + k) % 10] + ZHI[(k + 2) % 12]);
+      if (t === 'g' && pick.z[1]) list = list.filter(x => months.includes(x + pick.z[1]));
+      if (t === 'z' && pick.g[1]) list = list.filter(x => months.includes(pick.g[1] + x));
+    }
+    return list;
+  };
+
+  const close = () => { $('sheet').classList.add('hidden'); draw(); };
+  const open = (t, i) => {
+    const list = options(t, i);
+    $('sheetTitle').textContent = '选' + cols[i] + '的' + (t === 'g' ? '天干' : '地支') + '.exe';
+    $('sheetGrid').innerHTML = list.map(x => '<button type="button" class="opt" data-v="' + x + '"><b>' + x + '</b><span>' + (t === 'g' ? ganLab(x) : zhiLab(x)) + '</span></button>').join('') +
+      (i === 3 ? '<button type="button" class="opt wide" data-v="?"><b>不知道时辰</b></button>' : '');
+    const other = t === 'g' ? pick.z[i] : pick.g[i];
+    $('sheetTip').textContent = list.length < (t === 'g' ? 10 : 12) && other && other !== '?'
+      ? (i === 1 && pick.g[0] ? '只列出跟年干、' : '只列出跟') + '「' + other + '」配得上的字' : '';
+    $('sheetGrid').querySelectorAll('.opt').forEach(el => el.onclick = () => {
+      const v = el.dataset.v;
+      if (v === '?') { pick.g[3] = pick.z[3] = '?'; }
+      else {
+        pick[t][i] = v;
+        const o = t === 'g' ? 'z' : 'g';
+        if (pick[o][i] === '?') pick[o][i] = '';
+        if (pick[o][i] && !options(o, i).includes(pick[o][i])) pick[o][i] = ''; // 配不上的另一半清掉
+        if (i === 0 && pick.g[1] && pick.z[1] && !options('z', 1).includes(pick.z[1])) pick.z[1] = '';
+      }
+      $('err').textContent = '';
+      const next = order.find(([tt, ii]) => !pick[tt][ii]);
+      if (next) { draw(); open(next[0], next[1]); } else close();
+    });
+    $('sheet').classList.remove('hidden');
+    draw();
+    const cur = $('picks').querySelector('.slot[data-t="' + t + '"][data-i="' + i + '"]');
+    if (cur) cur.classList.add('on');
+  };
+  $('sheetX').onclick = close;
+  $('sheetMask').onclick = close;
+  draw();
+
   $('go').onclick = () => {
     let s = '';
     for (let i = 0; i < 4; i++) {
-      const g = $('g' + i).value, z = $('z' + i).value;
+      const g = pick.g[i], z = pick.z[i];
       if (i === 3 && (g === '?' || z === '?')) break;
-      if (!g || !z) { $('err').textContent = '「' + cols[i] + '」还没选完'; return; }
+      if (!g || !z) { $('err').textContent = '「' + cols[i] + '」还没选完'; open(!g ? 'g' : 'z', i); return; }
       s += g + z;
     }
-    if (!Lala.parse(s)) { $('err').textContent = '有一柱的天干地支配不上（阳干配阳支、阴干配阴支），再对一下排盘'; return; }
+    if (!Lala.parse(s)) { $('err').textContent = '有一柱的天干地支配不上，再对一下排盘'; return; }
     location.search = '?b=' + encodeURIComponent(s);
   };
 }
@@ -364,7 +449,7 @@ function showResult() {
   $('quote').style.fontSize = (r.quote.length > 34 ? 21 : r.quote.length > 26 ? 23 : 25) + 'px';
   $('ev').innerHTML = r.ev.map(x => '<li>' + esc(x) + '</li>').join('');
   $('yj').innerHTML = '<div class="row"><span class="tag yi">宜</span><span>' + esc(r.yi) + '</span></div><div class="row"><span class="tag ji">忌</span><span>' + esc(r.ji) + '</span></div>';
-  $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，你们六合';
+  $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，你们可能很搭哦';
   $('foot').textContent = '送检八字  ' + r.pillars.join('  ');
 
   fit();
