@@ -328,6 +328,7 @@ function showResult() {
   const r = Lala.judge(b, '女', { dayun: dy, year: new Date().getFullYear() });
   if (r.error) { showHome(); $('err').textContent = '链接里的八字看不懂，请在上面重新选一次'; return; }
   $('result').classList.remove('hidden');
+  if (q.has('only')) { document.querySelector('.report').classList.add('hidden'); document.querySelector('.taskbar').classList.add('hidden'); document.body.style.padding = '10px'; }
   $('tab1').textContent = '鉴定报告.exe';
   $('tab2').classList.remove('hidden');
 
@@ -350,7 +351,7 @@ function showResult() {
   const img = new Image();
   img.onload = () => { $('art').innerHTML = ''; $('art').appendChild(img); };
   img.onerror = () => { $('art').innerHTML = '<div class="ph">' + esc(card.n) + '</div>'; };
-  img.src = 'art/' + String(c).padStart(2, '0') + '.png';
+  img.src = 'art/' + String(c).padStart(2, '0') + '.webp';
 
   const ttl = $('ttl');
   ttl.innerHTML = esc(card.n) + (card.s ? '<small>' + esc(card.s) + '</small>' : '');
