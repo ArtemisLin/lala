@@ -163,7 +163,7 @@
     {
       const why = [];
       if (benqi(1) === '伤官') why.push('月令' + Z[1] + '：伤官当令');
-      if (tou('伤官') && anyCang(wxOf('伤官'))) why.push(gw(touIdx('伤官')[0]) + '伤官透干有根');
+      if (tou('伤官') && anyBenqi(wxOf('伤官'))) why.push(gw(touIdx('伤官')[0]) + '伤官透干、根深');
       if (count('伤官') >= 3) why.push('伤官' + count('伤官') + '个，数量超标');
       const cs = touIdx('伤官').find(i => zizuo[i] === '长生');
       if (cs !== undefined) why.push('伤官' + G[cs] + '坐长生');
@@ -180,24 +180,26 @@
     }
     {
       const n = count('正财') + count('偏财');
-      set('A7', !tou('正官') && !tou('七杀') && n >= 4, '官杀不透，财星' + n + '个');
+      set('A7', !tou('正官') && !tou('七杀') && n >= 3, '官杀不透，财星' + n + '个');
     }
-    set('A8', count('比肩') >= 3, '比肩' + count('比肩') + '个，姐妹成群');
+    // 比肩那两条：年干、年支的比劫不算（谷雨 10-21）
+    const bjN = tg.filter((t, i) => i > 0 && t === '比肩').length + cg.slice(1).reduce((n, l) => n + l.filter(x => x.ss === '比肩').length, 0);
+    set('A8', bjN >= 3, '比肩' + bjN + '个，姐妹成群');
     {
-      const b = touIdx('比肩')[0], k = touIdx('七杀')[0];
+      const b = touIdx('比肩').filter(i => i > 0)[0], k = touIdx('七杀')[0];
       set('A9', b !== undefined && k !== undefined, gw(b ?? 0) + '比肩扛住' + gw(k ?? 0) + '七杀');
     }
     // 顺序就是判牌时的优先顺序
-    const aHits = ['A1', 'A2', 'A3', 'A4', 'A5', 'A9', 'A8', 'A6', 'A7'].filter(k => E[k].hit);
+    const aHits = ['A1', 'A2', 'A3', 'A4', 'A7', 'A5', 'A6', 'A9', 'A8'].filter(k => E[k].hit);
     const aKinds = aHits.filter(k => k !== 'A2').length; // 伏吟算 A1 的加强，不单算一类
-    const aKinds6 = aHits.filter(k => !['A2', 'A8', 'A9'].includes(k)).length; // 隐藏款只数原来六类
+    const aKinds6 = aHits.filter(k => !['A2', 'A7', 'A8', 'A9'].includes(k)).length; // 隐藏款只数配偶宫、沐浴、伤官、偏印这几类
     // 食神制杀（天干上食神、七杀都有）或食神过旺：异性缘淡，算弯弯苗头
     const zhisha = tou('食神') && tou('七杀');
     set('F', zhisha || count('食神') >= 3, zhisha ? gw(touIdx('食神')[0]) + '食神制住' + gw(touIdx('七杀')[0]) + '七杀' : '食神' + count('食神') + '个，异性缘淡');
     {
       const n = count('伤官') + count('偏印');
       const why = tou('伤官') ? '伤官透出：苗头已现' : tou('偏印') ? '偏印透出：苗头已现' : E.F.hit ? E.F.why : '伤官偏印藏了' + n + '个';
-      set('B', !aHits.length && (tou('伤官') || tou('偏印') || n >= 2 || E.F.hit), why);
+      set('B', !aHits.length && (tou('伤官') || tou('偏印') || E.F.hit), why);
     }
     {
       // 七杀被食神制住，就不算官杀旺
@@ -280,7 +282,7 @@
         if (!bend && !straight) E.Y.info = head + '，不弯不直';
         // 先直后弯：现在走弯运，以前走过官杀运或正印运，盘里本来也有弯的物证
         const zhi = ['正官', '七杀', '正印'];
-        for (let i = 0; i < k && bend && aKinds; i++) {
+        for (let i = 0; i < k && bend && (aKinds || E.E.hit); i++) {
           const d = dy[i], a = shishen(dm, d.gz[0]), z = shishen(dm, CANG[d.gz[1]][0]);
           if (zhi.includes(a) || zhi.includes(z)) late = '早年走过' + d.gz + '运：' + (zhi.includes(a) ? a : d.gz[1] + '是' + z);
         }
@@ -290,14 +292,25 @@
     // 判牌：从上往下，中了就停
     const anyC = E.C1.hit || E.C2.hit || E.C3.hit;
     let c;
+    // 组合着看：中两类以上弯的物证、或中了最强的配偶宫两条，才算「够弯」；
+    // 只中一类普通的，盘里只要有直的物证（官杀、正印、直运）就落到中间的牌
+    const strong = aKinds >= 2 || E.A1.hit || E.A3.hit;
+    const weak = aKinds === 1 && !strong;
+    const guan = E.C1.hit || E.C2.hit;
     if (E.G.hit) c = 11; // 官杀过旺：一定是直女
     else if (aKinds6 >= 3 && (E.A1.hit || E.A3.hit)) c = 0; // 隐藏款：三类以上，且配偶宫有物证
     else if (E.D.hit) c = 13;
-    else if (late) c = 14; // 大器晚弯
-    else if (aKinds === 1 && (E.C1.hit || E.C2.hit)) c = E.Z.hit ? 9 : 7; // 走直运时降成薛定谔
-    else if (aKinds === 1 && E.C3.hit) c = 8;
-    else if (aHits.length) c = ({ A1: 1, A2: 1, A3: 2, A4: 3, A5: 4, A9: 4, A8: 2, A6: 5, A7: 6 })[aHits[0]];
-    else if (E.B.hit && anyC) c = 9;
+    else if (late && (strong || E.E.hit)) c = 14; // 大器晚弯：盘里本来够弯（或建禄、羊刃，比劫当令），被早年的直运压住
+    else if (strong && guan) c = E.Z.hit && aKinds === 1 ? 9 : 7; // 成年人不做选择；只有一类又走直运就降成薛定谔
+    else if (strong && E.C3.hit && aKinds === 1) c = 8;
+    else if (strong) c = ({ A1: 1, A2: 1, A3: 2, A4: 3, A5: 4, A9: 4, A8: 2, A6: 5, A7: 6 })[aHits[0]];
+    else if (weak && E.Z.hit) c = 9; // 一点弯，正走直运
+    else if (weak && guan) c = 7; // 一点弯，又喜欢男人
+    else if (weak && E.C3.hit) c = 8;
+    else if (weak) c = ({ A4: 3, A5: 4, A9: 4, A8: 2, A6: 5, A7: 6 })[aHits[0]];
+    else if (E.Z.hit && !E.C3.hit) c = 12; // 盘里没有够格的弯物证，还正走直运
+    else if (E.Y.hit) c = 10; // 盘里不弯，但正走弯运：最近特别爱嗑
+    else if (E.B.hit && (anyC || E.Z.hit)) c = 9;
     else if (E.B.hit) c = 10;
     else if (E.C3.hit) c = 11;
     else c = 12;
