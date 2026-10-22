@@ -6,8 +6,8 @@
 <title>拉拉鉴定所</title>
 <style>
 /* 画风取自「谷雨 × HERSTORY」易拉宝：粉色双线窗口、奶油底、像素字、四角星、浅色网格 */
-@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2?v=20261022103609') format('woff2'); font-display: swap; }
-@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2?v=20261022103609') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2?v=20261022105252') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2?v=20261022105252') format('woff2'); font-display: swap; }
 :root {
   --bg: #fdf5f8;
   --grid: #f5dde7;
@@ -144,9 +144,9 @@ body {
 .card .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .art .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--smiley); font-size: 40px; color: var(--line); }
 .card .st1 { position: absolute; top: 72px; right: 54px; width: 56px; z-index: 2; }
-.card .tag { position: absolute; top: 74px; left: 34px; z-index: 4; transform: rotate(-6deg); background: linear-gradient(135deg, #ff5fa8, var(--rose)); color: #fff; border: 3px solid #fff; border-radius: 16px; padding: 5px 18px 9px; text-align: center; box-shadow: 0 0 0 2px var(--line), 0 8px 16px rgba(226, 0, 122, .28); max-width: 330px; }
-.card .tag small { display: block; font-family: var(--pixel); font-size: 14px; letter-spacing: 2px; opacity: .92; }
-.card .tag b { display: block; font-family: var(--sans); font-weight: 900; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(150, 0, 80, .35); }
+.card .nametag { position: absolute; top: 74px; left: 34px; z-index: 4; transform: rotate(-6deg); background: linear-gradient(135deg, #ff5fa8, var(--rose)); color: #fff; border: 3px solid #fff; border-radius: 16px; padding: 5px 18px 9px; text-align: center; box-shadow: 0 0 0 2px var(--line), 0 8px 16px rgba(226, 0, 122, .28); max-width: 330px; }
+.card .nametag small { display: block; font-family: var(--pixel); font-size: 14px; letter-spacing: 2px; opacity: .92; }
+.card .nametag b { display: block; font-family: var(--sans); font-weight: 900; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(150, 0, 80, .35); }
 .card .st2 { position: absolute; top: 452px; right: 62px; width: 44px; z-index: 2; }
 .card .badge { position: absolute; top: 84px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 3px 18px; border-radius: 14px; background: var(--gold); color: #fff; font-family: var(--pixel); font-size: 18px; display: none; }
 .seal { position: absolute; top: 532px; right: 66px; z-index: 3; width: 98px; height: 98px; border: 3px solid var(--rose); border-radius: 50%; color: var(--rose); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-14deg); background: rgba(255, 250, 242, .92); font-weight: 700; line-height: 1.15; }
@@ -182,7 +182,7 @@ body {
 .st-row .bar { height: 13px; border: 1.5px solid var(--line); border-radius: 7px; background: var(--cream2); overflow: hidden; }
 .st-row .bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff9ccd, var(--rose)); }
 .st-row .v { font-family: var(--pixel); font-size: 16px; color: var(--rose); text-align: right; }
-.tc-row { display: flex; gap: 8px; font-size: 16.5px; line-height: 1.45; margin-bottom: 7px; color: var(--ink); }
+.tc-row { display: flex; gap: 8px; font-size: 16px; line-height: 1.4; margin-bottom: 6px; color: var(--ink); }
 .tc-row .k { flex: none; font-family: var(--pixel); font-size: 13.5px; color: #fff; background: var(--line); border-radius: 6px; padding: 0 6px; height: 21px; line-height: 21px; margin-top: 1px; }
 .ev ul { list-style: none; }
 .ev li { font-size: 17px; line-height: 1.6; padding-left: 20px; position: relative; }
@@ -238,16 +238,16 @@ body {
 </head>
 <body>
 
-<img class="deco" src="ui/star-y.png?v=20261022103609" alt="" style="left:2%;top:120px;width:46px">
-<img class="deco" src="ui/star-w.png?v=20261022103609" alt="" style="right:3%;top:60px;width:38px">
-<img class="deco" src="ui/star-w.png?v=20261022103609" alt="" style="right:6%;bottom:110px;width:30px">
+<img class="deco" src="ui/star-y.png?v=20261022105252" alt="" style="left:2%;top:120px;width:46px">
+<img class="deco" src="ui/star-w.png?v=20261022105252" alt="" style="right:3%;top:60px;width:38px">
+<img class="deco" src="ui/star-w.png?v=20261022105252" alt="" style="right:6%;bottom:110px;width:30px">
 
 <!-- 首页：选八字 -->
 <section class="home hidden" id="home">
   <div class="win">
     <div class="bar"><span>拉拉鉴定所.exe</span><span class="btns"><i></i><i></i><i></i></span></div>
     <div class="body">
-      <div class="hero"><img class="pc" src="ui/hero.webp?v=20261022103609" alt="" onerror="this.onerror=null;this.src='ui/computer.webp?v=20261022103609'"></div>
+      <div class="hero"><img class="pc" src="ui/hero.webp?v=20261022105252" alt="" onerror="this.onerror=null;this.src='ui/computer.webp?v=20261022105252'"></div>
       <h1 class="title">拉拉鉴定所</h1>
       <p class="sub">本鉴定仅供娱乐，<span class="warn">切勿当真</span></p>
       <div class="label">你的名字</div>
@@ -292,9 +292,9 @@ body {
           <div class="tb"><span id="num"></span><span class="btns"><i></i><i></i><i></i></span></div>
           <div class="badge">隐藏款</div>
           <div class="art" id="art"></div>
-          <img class="st1" src="ui/star-y.png?v=20261022103609" alt="">
-          <div class="tag hidden" id="tag"><small>送检人</small><b id="tagName"></b></div>
-          <img class="st2" src="ui/star-w.png?v=20261022103609" alt="">
+          <img class="st1" src="ui/star-y.png?v=20261022105252" alt="">
+          <div class="nametag hidden" id="tag"><small>送检人</small><b id="tagName"></b></div>
+          <img class="st2" src="ui/star-w.png?v=20261022105252" alt="">
           <div class="seal"><b>鉴定专用</b><i>仅供娱乐</i></div>
           <div class="lower">
             <div class="ttl-row"><div class="ttl" id="ttl"></div><span class="rar" id="rar"></span></div>
@@ -311,13 +311,13 @@ body {
             </div>
             <div class="bottom">
               <div><div class="match" id="match"></div><div class="foot" id="foot"></div></div>
-              <div class="qr"><img src="ui/qr.png?v=20261022103609" alt="扫码测测你"><span>扫码测测你</span></div>
+              <div class="qr"><img src="ui/qr.png?v=20261022105252" alt="扫码测测你"><span>扫码测测你</span></div>
             </div>
           </div>
         </div></div>
         <div class="back"><div class="card">
           <div class="frame"></div>
-          <div class="mid"><img src="ui/star-y.png?v=20261022103609" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
+          <div class="mid"><img src="ui/star-y.png?v=20261022105252" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
         </div></div>
       </div>
     </div>
@@ -331,9 +331,9 @@ body {
 
 <div class="taskbar"><span class="start">✦ START</span><span class="tab" id="tab1">拉拉鉴定所.exe</span><span class="tab extra hidden" id="tab2">鉴定牌.exe</span><span class="clock" id="clock"></span></div>
 
-<script src="html2canvas.min.js?v=20261022103609"></script>
-<script src="bazi-core.js?v=20261022103609"></script>
-<script src="lala.js?v=20261022103609"></script>
+<script src="html2canvas.min.js?v=20261022105252"></script>
+<script src="bazi-core.js?v=20261022105252"></script>
+<script src="lala.js?v=20261022105252"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -529,7 +529,7 @@ function showResult() {
   const img = new Image();
   img.onload = () => { $('art').innerHTML = ''; $('art').appendChild(img); };
   img.onerror = () => { $('art').innerHTML = '<div class="ph">' + esc(card.n) + '</div>'; };
-  img.src = 'art/' + String(c).padStart(2, '0') + '.webp?v=20261022103609';
+  img.src = 'art/' + String(c).padStart(2, '0') + '.webp?v=20261022105252';
 
   const ttl = $('ttl');
   ttl.innerHTML = esc(card.n) + (card.s ? '<small>' + esc(card.s) + '</small>' : '');
@@ -546,8 +546,8 @@ function showResult() {
   $('quote').style.fontSize = (r.quote.length > 30 ? 20 : 22) + 'px';
   $('stats').innerHTML = r.stats.map(([k, v]) => '<div class="st-row"><span class="k">' + k + '</span><span class="bar"><i style="width:' + Math.min(100, v) + '%"></i></span><span class="v">' + (v >= 100 ? 'MAX' : v) + '</span></div>').join('');
   const T = r.tiancai;
-  $('tc').innerHTML = [['她是', T.who], ['长相', T.look], ['遇见', T.meet], ['你们', T.mode]].map(([k, v]) => '<div class="tc-row"><span class="k">' + k + '</span><span>' + esc(v) + '</span></div>').join('');
-  $('tcNote').innerHTML = [['她是', T.who], ['长相', T.look], ['在哪遇见', T.meet], ['你们会', T.mode]].map(([k, v]) => '<b style="display:inline;color:var(--rose);font-family:var(--pixel)">' + k + '</b>　' + esc(v)).join('<br>');
+  $('tc').innerHTML = [['她是', T.who], ['性格', T.trait], ['长相', T.look], ['遇见', T.meet], ['你们', T.mode]].map(([k, v]) => '<div class="tc-row"><span class="k">' + k + '</span><span>' + esc(v) + '</span></div>').join('');
+  $('tcNote').innerHTML = [['她是', T.who], ['性格', T.trait], ['长相', T.look], ['在哪遇见', T.meet], ['你们会', T.mode]].map(([k, v]) => '<b style="display:inline;color:var(--rose);font-family:var(--pixel)">' + k + '</b>　' + esc(v)).join('<br>');
   $('ev').innerHTML = r.ev.slice(0, 2).map(x => '<li>' + esc(x) + '</li>').join('');
   $('yj').innerHTML = '<div class="row"><span class="tag yi">宜</span><span>' + esc(r.yi) + '</span></div><div class="row"><span class="tag ji">忌</span><span>' + esc(r.ji) + '</span></div>';
   $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，可能很搭哦';
