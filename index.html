@@ -85,6 +85,17 @@ body {
 .btn.ghost { background: var(--cream2); color: var(--rose); box-shadow: 0 4px 0 var(--line); border-color: var(--line); }
 .err, .hint { text-align: center; font-size: 15px; min-height: 22px; margin-top: 10px; }
 .err { color: var(--rose); }
+.hist { display: flex; flex-direction: column; gap: 8px; }
+.hi { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; border: 2px solid var(--line); border-radius: 12px; background: var(--cream2); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hi:active { background: #fff; }
+.hi .l { min-width: 0; }
+.hi .who { font-family: var(--pixel); font-size: 14px; color: var(--rose); }
+.hi .bz { font-family: var(--smiley); font-size: 21px; letter-spacing: 1px; line-height: 1.25; }
+.hi .res { margin-left: auto; text-align: right; font-size: 13.5px; color: var(--soft); line-height: 1.4; }
+.hi .res b { display: block; font-family: var(--smiley); font-size: 17px; font-weight: 400; color: var(--ink); }
+.hi .x { flex: none; width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; color: var(--soft); font-size: 16px; line-height: 1; cursor: pointer; }
+.hist-foot { text-align: center; font-size: 13.5px; color: var(--soft); margin-top: 10px; }
+.link { font-family: var(--sans); font-size: 13.5px; color: var(--rose); background: none; border: 0; border-bottom: 1.5px dashed var(--rose); padding: 0 0 1px; cursor: pointer; }
 .hint { color: var(--soft); }
 
 /* ---------- 结果页 ---------- */
@@ -244,6 +255,11 @@ body {
       <div class="kb hidden" id="kb"><div class="t" id="kbT"></div><div class="keys" id="keys"></div><div class="kb-foot" id="kbFoot"></div></div>
       <div class="acts"><button class="btn big" id="go">送去鉴定 ▶</button></div>
       <p class="err" id="err"></p>
+      <div id="histWrap" class="hidden">
+        <div class="label">最近鉴定过</div>
+        <div class="hist" id="hist"></div>
+        <p class="hist-foot">点一条直接看结果，不用重排　<button type="button" class="link" id="histClear">清空记录</button></p>
+      </div>
     </div>
   </div>
 </section>
@@ -335,7 +351,26 @@ const EV_NAMES = [
 const tick = () => { const d = new Date(); $('clock').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 tick(); setInterval(tick, 20000);
 
-if (!b) showHome();
+// 历史记录：只存在这台设备的浏览器里，最多 20 条；存不了（无痕模式等）就算了
+const HKEY = 'lala-history';
+function loadHist() { try { return JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) { return []; } }
+function saveHist(list) { try { localStorage.setItem(HKEY, JSON.stringify(list.slice(0, 20))); } catch (e) {} }
+function showHist() {
+  const list = loadHist();
+  $('histWrap').classList.toggle('hidden', !list.length);
+  $('hist').innerHTML = list.map((h, k) =>
+    '<div class="hi" data-k="' + k + '"><div class="l"><div class="who">' + esc(h.name || '未署名') + '</div><div class="bz">' + Lala.parse(h.b).map(gz).join(' ') + '</div></div>' +
+    '<div class="res"><b>' + esc(h.card) + '</b>' + esc(h.tier || '') + ' · ' + esc(h.pct) + '%</div><button type="button" class="x" data-del="' + k + '" aria-label="删除这条">×</button></div>'
+  ).join('');
+  $('hist').querySelectorAll('.hi').forEach(el => el.onclick = e => {
+    const k = +el.dataset.k, h = loadHist()[k];
+    if (e.target.dataset.del !== undefined) { const l = loadHist(); l.splice(k, 1); saveHist(l); showHist(); return; }
+    if (h) location.search = '?b=' + encodeURIComponent(h.b) + (h.name ? '&name=' + encodeURIComponent(h.name) : '');
+  });
+  $('histClear').onclick = () => { saveHist([]); showHist(); };
+}
+
+if (!b) { showHome(); showHist(); }
 else showResult();
 
 // 小键盘用到的：阴阳、五行颜色（跟玄学天赋鉴定所同一套）
@@ -470,6 +505,12 @@ function showResult() {
   }).join('');
 
   const card = r.cardInfo, c = r.card;
+  {
+    const name = (q.get('name') || '').trim().slice(0, 10);
+    const l = loadHist().filter(h => !(h.b === r.pillars.join('') && (h.name || '') === name));
+    l.unshift({ b: r.pillars.join(''), name, card: card.n, pct: c === 13 ? '50' : r.pct, tier: r.rarity.tier, t: Date.now() });
+    saveHist(l);
+  }
   if (c === 0) $('card').classList.add('gold');
   const who = (q.get('name') || '').trim().slice(0, 10);
   $('num').textContent = 'No.' + card.r + '  ' + (who ? who + '的' : '') + '鉴定牌.exe';
