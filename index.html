@@ -6,8 +6,8 @@
 <title>拉拉鉴定所</title>
 <style>
 /* 画风取自「谷雨 × HERSTORY」易拉宝：粉色双线窗口、奶油底、像素字、四角星、浅色网格 */
-@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2') format('woff2'); font-display: swap; }
-@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2?v=20261022103609') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2?v=20261022103609') format('woff2'); font-display: swap; }
 :root {
   --bg: #fdf5f8;
   --grid: #f5dde7;
@@ -143,7 +143,10 @@ body {
 .card .art { position: absolute; top: 94px; left: 104px; width: 512px; height: 512px; border-radius: 256px 256px 18px 18px; overflow: hidden; border: 3px solid var(--line); background: linear-gradient(160deg, #fde3ec, #fff3df); box-shadow: 0 0 0 6px var(--cream2), 0 0 0 8px var(--pink); }
 .card .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .art .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--smiley); font-size: 40px; color: var(--line); }
-.card .st1 { position: absolute; top: 72px; left: 58px; width: 60px; z-index: 2; }
+.card .st1 { position: absolute; top: 72px; right: 54px; width: 56px; z-index: 2; }
+.card .tag { position: absolute; top: 74px; left: 34px; z-index: 4; transform: rotate(-6deg); background: linear-gradient(135deg, #ff5fa8, var(--rose)); color: #fff; border: 3px solid #fff; border-radius: 16px; padding: 5px 18px 9px; text-align: center; box-shadow: 0 0 0 2px var(--line), 0 8px 16px rgba(226, 0, 122, .28); max-width: 330px; }
+.card .tag small { display: block; font-family: var(--pixel); font-size: 14px; letter-spacing: 2px; opacity: .92; }
+.card .tag b { display: block; font-family: var(--sans); font-weight: 900; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(150, 0, 80, .35); }
 .card .st2 { position: absolute; top: 452px; right: 62px; width: 44px; z-index: 2; }
 .card .badge { position: absolute; top: 84px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 3px 18px; border-radius: 14px; background: var(--gold); color: #fff; font-family: var(--pixel); font-size: 18px; display: none; }
 .seal { position: absolute; top: 532px; right: 66px; z-index: 3; width: 98px; height: 98px; border: 3px solid var(--rose); border-radius: 50%; color: var(--rose); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-14deg); background: rgba(255, 250, 242, .92); font-weight: 700; line-height: 1.15; }
@@ -235,20 +238,20 @@ body {
 </head>
 <body>
 
-<img class="deco" src="ui/star-y.png" alt="" style="left:2%;top:120px;width:46px">
-<img class="deco" src="ui/star-w.png" alt="" style="right:3%;top:60px;width:38px">
-<img class="deco" src="ui/star-w.png" alt="" style="right:6%;bottom:110px;width:30px">
+<img class="deco" src="ui/star-y.png?v=20261022103609" alt="" style="left:2%;top:120px;width:46px">
+<img class="deco" src="ui/star-w.png?v=20261022103609" alt="" style="right:3%;top:60px;width:38px">
+<img class="deco" src="ui/star-w.png?v=20261022103609" alt="" style="right:6%;bottom:110px;width:30px">
 
 <!-- 首页：选八字 -->
 <section class="home hidden" id="home">
   <div class="win">
     <div class="bar"><span>拉拉鉴定所.exe</span><span class="btns"><i></i><i></i><i></i></span></div>
     <div class="body">
-      <div class="hero"><img class="pc" src="ui/hero.webp" alt="" onerror="this.onerror=null;this.src='ui/computer.webp'"></div>
+      <div class="hero"><img class="pc" src="ui/hero.webp?v=20261022103609" alt="" onerror="this.onerror=null;this.src='ui/computer.webp?v=20261022103609'"></div>
       <h1 class="title">拉拉鉴定所</h1>
       <p class="sub">本鉴定仅供娱乐，<span class="warn">切勿当真</span></p>
       <div class="label">你的名字</div>
-      <input class="name-in" id="nm" maxlength="10" placeholder="可以不填，填了会印在牌上" autocomplete="off">
+      <input class="name-in" id="nm" maxlength="10" placeholder="写上名字或昵称，会印在牌上" autocomplete="off">
       <div class="label">送检样本</div>
       <p class="how">照着你的八字排盘（用哪个排盘 App 都可以），从年柱天干开始点字，选完会自动跳到下一格。点格子可以改。不知道时辰的，时柱点「不知道时辰」。</p>
       <div class="picks" id="picks"></div>
@@ -289,8 +292,9 @@ body {
           <div class="tb"><span id="num"></span><span class="btns"><i></i><i></i><i></i></span></div>
           <div class="badge">隐藏款</div>
           <div class="art" id="art"></div>
-          <img class="st1" src="ui/star-y.png" alt="">
-          <img class="st2" src="ui/star-w.png" alt="">
+          <img class="st1" src="ui/star-y.png?v=20261022103609" alt="">
+          <div class="tag hidden" id="tag"><small>送检人</small><b id="tagName"></b></div>
+          <img class="st2" src="ui/star-w.png?v=20261022103609" alt="">
           <div class="seal"><b>鉴定专用</b><i>仅供娱乐</i></div>
           <div class="lower">
             <div class="ttl-row"><div class="ttl" id="ttl"></div><span class="rar" id="rar"></span></div>
@@ -307,13 +311,13 @@ body {
             </div>
             <div class="bottom">
               <div><div class="match" id="match"></div><div class="foot" id="foot"></div></div>
-              <div class="qr"><img src="ui/qr.png" alt="扫码测测你"><span>扫码测测你</span></div>
+              <div class="qr"><img src="ui/qr.png?v=20261022103609" alt="扫码测测你"><span>扫码测测你</span></div>
             </div>
           </div>
         </div></div>
         <div class="back"><div class="card">
           <div class="frame"></div>
-          <div class="mid"><img src="ui/star-y.png" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
+          <div class="mid"><img src="ui/star-y.png?v=20261022103609" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
         </div></div>
       </div>
     </div>
@@ -327,9 +331,9 @@ body {
 
 <div class="taskbar"><span class="start">✦ START</span><span class="tab" id="tab1">拉拉鉴定所.exe</span><span class="tab extra hidden" id="tab2">鉴定牌.exe</span><span class="clock" id="clock"></span></div>
 
-<script src="html2canvas.min.js"></script>
-<script src="bazi-core.js"></script>
-<script src="lala.js"></script>
+<script src="html2canvas.min.js?v=20261022103609"></script>
+<script src="bazi-core.js?v=20261022103609"></script>
+<script src="lala.js?v=20261022103609"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -461,6 +465,7 @@ function showHome() {
     }
     if (!Lala.parse(s)) { $('err').textContent = '有一柱的天干地支配不上（阳干配阳支、阴干配阴支），再对一下排盘'; return; }
     const nm = $('nm').value.trim();
+    if (!nm) { $('err').textContent = '先写上你的名字或昵称，会印在牌上'; $('nm').focus(); return; }
     location.search = '?b=' + encodeURIComponent(s) + (nm ? '&name=' + encodeURIComponent(nm) : '');
   };
 }
@@ -513,14 +518,18 @@ function showResult() {
   }
   if (c === 0) $('card').classList.add('gold');
   const who = (q.get('name') || '').trim().slice(0, 10);
-  $('num').textContent = 'No.' + card.r + '  ' + (who ? who + '的' : '') + '鉴定牌.exe';
-  if (who.length > 5) $('num').style.fontSize = '18px';
+  $('num').textContent = 'No.' + card.r + '  鉴定牌.exe';
+  if (who) {
+    $('tag').classList.remove('hidden');
+    $('tagName').textContent = who;
+    $('tagName').style.fontSize = (who.length <= 3 ? 38 : who.length <= 5 ? 32 : 26) + 'px';
+  }
   if (who) $('sampleLab').textContent = '送检样本 · ' + who;
   document.title = card.n + ' · 拉拉概率鉴定牌';
   const img = new Image();
   img.onload = () => { $('art').innerHTML = ''; $('art').appendChild(img); };
   img.onerror = () => { $('art').innerHTML = '<div class="ph">' + esc(card.n) + '</div>'; };
-  img.src = 'art/' + String(c).padStart(2, '0') + '.webp';
+  img.src = 'art/' + String(c).padStart(2, '0') + '.webp?v=20261022103609';
 
   const ttl = $('ttl');
   ttl.innerHTML = esc(card.n) + (card.s ? '<small>' + esc(card.s) + '</small>' : '');
