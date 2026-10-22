@@ -72,6 +72,9 @@ body {
 .opt.wide { grid-column: span 2; }
 .opt.wide b { font-family: var(--pixel); font-size: 17px; color: var(--rose); }
 .sheet .tip { font-size: 13.5px; color: var(--soft); text-align: center; margin-top: 10px; }
+.opt.clear b { color: var(--soft); }
+.redo { text-align: center; font-size: 14px; color: var(--soft); margin-top: 12px; }
+.link { font-family: var(--sans); font-size: 14px; color: var(--rose); background: none; border: 0; border-bottom: 1.5px dashed var(--rose); padding: 0 0 1px; cursor: pointer; }
 .acts { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 .btn { font-family: var(--pixel); font-size: 19px; padding: 11px 28px; border-radius: 26px; border: 2.5px solid var(--rose); cursor: pointer; background: var(--rose); color: #fff; letter-spacing: 1px; text-decoration: none; box-shadow: 0 4px 0 #b30062; }
 .btn.big { width: 100%; font-size: 21px; padding: 13px 0; }
@@ -213,6 +216,7 @@ body {
       <div class="label">送检样本</div>
       <p class="how">照着你的八字排盘（用哪个排盘 App 都可以），一柱一柱选好天干、地支。不知道时辰的，时柱选「不知道」。</p>
       <div class="picks" id="picks"></div>
+      <p class="redo">选错了？点那个字就能改　<button type="button" class="link" id="reset">全部清空，重新选</button></p>
       <div class="acts"><button class="btn big" id="go">送去鉴定 ▶</button></div>
       <p class="err" id="err"></p>
     </div>
@@ -264,7 +268,7 @@ body {
       </div>
     </div>
     <div class="acts hidden" id="acts">
-      <button class="btn" id="save">保存鉴定牌</button>
+      <button class="btn" id="save">保存 / 分享鉴定牌</button>
       <a class="btn ghost" href="index.html">再鉴定一个</a>
     </div>
     <p class="hint" id="saveHint"></p>
@@ -332,8 +336,8 @@ function showHome() {
     $('picks').querySelectorAll('.slot').forEach(el => el.onclick = () => open(el.dataset.t, +el.dataset.i));
   };
 
-  // 可选的字：阳干只配阳支、阴干只配阴支；年干定了，月干和月支要合五虎遁
-  const options = (t, i) => {
+  // 配得上的字：阳干只配阳支、阴干只配阴支；年干定了，月干和月支要合五虎遁
+  const allowed = (t, i) => {
     const other = t === 'g' ? pick.z[i] : pick.g[i];
     let list = [...(t === 'g' ? GAN : ZHI)];
     if (other && other !== '?') {
@@ -348,25 +352,33 @@ function showHome() {
     }
     return list;
   };
+  // 空格子只列配得上的字；已经选了的格子是在改，全部列出，配不上的另一半会自动清空
+  const options = (t, i) => (pick[t][i] && pick[t][i] !== '?' ? [...(t === 'g' ? GAN : ZHI)] : allowed(t, i));
 
   const close = () => { $('sheet').classList.add('hidden'); draw(); };
   const open = (t, i) => {
     const list = options(t, i);
     $('sheetTitle').textContent = '选' + cols[i] + '的' + (t === 'g' ? '天干' : '地支') + '.exe';
     $('sheetGrid').innerHTML = list.map(x => '<button type="button" class="opt" data-v="' + x + '"><b>' + gz(x) + '</b><span>' + (t === 'g' ? ganLab(x) : zhiLab(x)) + '</span></button>').join('') +
-      (i === 3 ? '<button type="button" class="opt wide" data-v="?"><b>不知道时辰</b></button>' : '');
+      (i === 3 ? '<button type="button" class="opt wide" data-v="?"><b>不知道时辰</b></button>' : '') +
+      (pick[t][i] ? '<button type="button" class="opt wide clear" data-v="clear"><b>清空这一格</b></button>' : '');
     const other = t === 'g' ? pick.z[i] : pick.g[i];
-    $('sheetTip').textContent = list.length < (t === 'g' ? 10 : 12) && other && other !== '?'
+    $('sheetTip').textContent = pick[t][i] && pick[t][i] !== '?' ? '重新点一个字就能改；跟另一半配不上的话，另一半会自动清空'
+      : list.length < (t === 'g' ? 10 : 12) && other && other !== '?'
       ? (i === 1 && pick.g[0] ? '只列出跟年干、' : '只列出跟') + '「' + other + '」配得上的字' : '';
     $('sheetGrid').querySelectorAll('.opt').forEach(el => el.onclick = () => {
       const v = el.dataset.v;
+      if (v === 'clear') {
+        if (pick[t][i] === '?') pick.g[i] = pick.z[i] = ''; else pick[t][i] = '';
+        close(); return;
+      }
       if (v === '?') { pick.g[3] = pick.z[3] = '?'; }
       else {
         pick[t][i] = v;
         const o = t === 'g' ? 'z' : 'g';
         if (pick[o][i] === '?') pick[o][i] = '';
-        if (pick[o][i] && !options(o, i).includes(pick[o][i])) pick[o][i] = ''; // 配不上的另一半清掉
-        if (i === 0 && pick.g[1] && pick.z[1] && !options('z', 1).includes(pick.z[1])) pick.z[1] = '';
+        if (pick[o][i] && !allowed(o, i).includes(pick[o][i])) pick[o][i] = ''; // 配不上的另一半清掉
+        if (i <= 1 && pick.g[1] && pick.z[1] && !allowed('z', 1).includes(pick.z[1])) pick.z[1] = ''; // 年干、月柱改了，不合五虎遁的月支清掉
       }
       $('err').textContent = '';
       const next = order.find(([tt, ii]) => !pick[tt][ii]);
@@ -378,6 +390,7 @@ function showHome() {
     if (cur) cur.classList.add('on');
   };
   $('sheetX').onclick = close;
+  $('reset').onclick = () => { pick.g.fill(''); pick.z.fill(''); $('err').textContent = ''; draw(); };
   $('sheetMask').onclick = close;
   draw();
 
@@ -480,28 +493,45 @@ function showResult() {
     $('scene').onclick = flip;
   }
 
+  // 翻牌后先在后台把牌画成图，点按钮时立刻调手机的分享面板（苹果手机要求在点击的当下调用）
+  let shot = null;
+  const render = () => shot || (shot = (async () => {
+    await document.fonts.ready;
+    const cv = await html2canvas($('card'), { scale: 2, backgroundColor: null, useCORS: true, onclone: d => { d.getElementById('card').style.transform = 'none'; } });
+    const url = cv.toDataURL('image/png');
+    const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+    return { url, file: new File([blob], '鉴定牌-' + card.n + '.png', { type: 'image/png' }) };
+  })());
+  const whenOpen = setInterval(() => { if ($('flipper').classList.contains('done')) { clearInterval(whenOpen); render().catch(() => {}); } }, 300);
+  const phone = matchMedia('(pointer: coarse)').matches;
+
+  const showShot = url => {
+    const box = document.createElement('div');
+    box.className = 'shot';
+    box.innerHTML = '<img alt="鉴定牌"><p>长按图片，可以保存或发给朋友<br>存进相册后就能发朋友圈 · 点空白处关闭</p>';
+    box.querySelector('img').src = url;
+    box.onclick = e => { if (e.target === box) box.remove(); };
+    document.body.appendChild(box);
+  };
   $('save').onclick = async () => {
-    $('saveHint').textContent = '正在生成图片……';
     try {
-      await document.fonts.ready;
-      const cv = await html2canvas($('card'), { scale: 2, backgroundColor: null, useCORS: true, onclone: d => { d.getElementById('card').style.transform = 'none'; } });
-      const url = cv.toDataURL('image/png');
-      if (matchMedia('(pointer: coarse)').matches) {
-        // 手机：弹出整张图，长按保存（苹果手机点下载存不进相册）
-        const box = document.createElement('div');
-        box.className = 'shot';
-        box.innerHTML = '<img alt="鉴定牌"><p>长按图片保存，点空白处关闭</p>';
-        box.querySelector('img').src = url;
-        box.onclick = e => { if (e.target === box) box.remove(); };
-        document.body.appendChild(box);
-        $('saveHint').textContent = '';
-      } else {
-        const a = document.createElement('a');
-        a.download = '鉴定牌-' + card.n + '.png';
-        a.href = url;
-        a.click();
-        $('saveHint').textContent = '已保存，发到群里炫一下吧';
+      if (phone && shot) {
+        const r = await shot;
+        if (navigator.canShare && navigator.canShare({ files: [r.file] })) {
+          try { await navigator.share({ files: [r.file], title: '拉拉鉴定牌', text: '我在拉拉鉴定所测出来了：' + card.n + '（切勿当真）' }); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+        showShot(r.url); return;
       }
+      $('saveHint').textContent = '正在生成图片……';
+      const r = await render();
+      $('saveHint').textContent = '';
+      if (phone) { showShot(r.url); return; }
+      const a = document.createElement('a');
+      a.download = r.file.name;
+      a.href = r.url;
+      a.click();
+      $('saveHint').textContent = '已保存，发到群里炫一下吧';
     } catch (e) {
       $('saveHint').textContent = '保存没成功，直接截图也行';
     }
