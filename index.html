@@ -54,6 +54,9 @@ body {
 .title { font-family: var(--smiley); font-size: 46px; line-height: 1.1; color: var(--rose); text-align: center; text-shadow: 3px 3px 0 var(--rose-soft); letter-spacing: 2px; }
 .sub { text-align: center; color: var(--soft); font-size: 16px; margin-top: 8px; }
 .how { color: var(--soft); font-size: 15px; line-height: 1.6; }
+.name-in { display: block; width: 100%; height: 52px; border: 2px solid var(--line); border-radius: 12px; background: var(--cream2); padding: 0 16px; font-family: var(--sans); font-size: 18px; color: var(--ink); outline: none; }
+.name-in::placeholder { color: #b3aec2; }
+.name-in:focus { border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
 .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; text-align: center; margin-top: 10px; }
 .picks .pos { font-family: var(--pixel); font-size: 15px; color: var(--soft); margin-bottom: 5px; }
 .slot { display: block; width: 100%; height: 52px; border-radius: 10px; border: 2px solid var(--line); background: var(--cream2); color: var(--ink); font-family: var(--smiley); font-size: 26px; cursor: pointer; }
@@ -213,6 +216,8 @@ body {
       <div class="hero"><img class="pc" src="ui/hero.webp" alt="" onerror="this.onerror=null;this.src='ui/computer.webp'"></div>
       <h1 class="title">拉拉鉴定所</h1>
       <p class="sub">本鉴定仅供娱乐，<span class="warn">切勿当真</span></p>
+      <div class="label">你的名字</div>
+      <input class="name-in" id="nm" maxlength="10" placeholder="可以不填，填了会印在牌上" autocomplete="off">
       <div class="label">送检样本</div>
       <p class="how">照着你的八字排盘（用哪个排盘 App 都可以），一柱一柱选好天干、地支。不知道时辰的，时柱选「不知道」。</p>
       <div class="picks" id="picks"></div>
@@ -229,7 +234,7 @@ body {
     <div class="bar"><span>鉴定报告.exe</span><span class="btns"><i></i><i></i><i></i></span></div>
     <div class="body">
       <div class="head"><b>谷雨悟道 · 拉拉鉴定所</b><span>拉拉概率鉴定报告 · 本鉴定仅供娱乐，<span class="warn">切勿当真</span></span></div>
-      <div class="label">送检样本</div>
+      <div class="label" id="sampleLab">送检样本</div>
       <div class="pillars" id="pillars"></div>
       <div id="noteWrap"><div class="label">送检备注</div><div class="note" id="note"></div></div>
       <div class="label">物证清单</div>
@@ -403,7 +408,8 @@ function showHome() {
       s += g + z;
     }
     if (!Lala.parse(s)) { $('err').textContent = '有一柱的天干地支配不上，再对一下排盘'; return; }
-    location.search = '?b=' + encodeURIComponent(s);
+    const nm = $('nm').value.trim().slice(0, 10);
+    location.search = '?b=' + encodeURIComponent(s) + (nm ? '&name=' + encodeURIComponent(nm) : '');
   };
 }
 
@@ -448,7 +454,10 @@ function showResult() {
 
   const card = r.cardInfo, c = r.card;
   if (c === 0) $('card').classList.add('gold');
-  $('num').textContent = 'No.' + card.r + '  鉴定牌.exe';
+  const who = (q.get('name') || '').trim().slice(0, 10);
+  $('num').textContent = 'No.' + card.r + '  ' + (who ? who + '的' : '') + '鉴定牌.exe';
+  if (who.length > 5) $('num').style.fontSize = '18px';
+  if (who) $('sampleLab').textContent = '送检样本 · ' + who;
   document.title = card.n + ' · 拉拉概率鉴定牌';
   const img = new Image();
   img.onload = () => { $('art').innerHTML = ''; $('art').appendChild(img); };
@@ -467,7 +476,7 @@ function showResult() {
   $('ev').innerHTML = r.ev.map(x => '<li>' + esc(x) + '</li>').join('');
   $('yj').innerHTML = '<div class="row"><span class="tag yi">宜</span><span>' + esc(r.yi) + '</span></div><div class="row"><span class="tag ji">忌</span><span>' + esc(r.ji) + '</span></div>';
   $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，你们可能很搭哦';
-  $('foot').innerHTML = '送检八字  ' + r.pillars.map(gz).join('  ');
+  $('foot').innerHTML = (q.get('name') ? '送检人 ' + esc(q.get('name').trim().slice(0, 10)) + '    ' : '') + '送检八字  ' + r.pillars.map(gz).join('  ');
 
   fit();
   window.addEventListener('resize', fit);
@@ -500,7 +509,7 @@ function showResult() {
     const cv = await html2canvas($('card'), { scale: 2, backgroundColor: null, useCORS: true, onclone: d => { d.getElementById('card').style.transform = 'none'; } });
     const url = cv.toDataURL('image/png');
     const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
-    return { url, file: new File([blob], '鉴定牌-' + card.n + '.png', { type: 'image/png' }) };
+    return { url, file: new File([blob], '鉴定牌-' + (who ? who + '-' : '') + card.n + '.png', { type: 'image/png' }) };
   })());
   const whenOpen = setInterval(() => { if ($('flipper').classList.contains('done')) { clearInterval(whenOpen); render().catch(() => {}); } }, 300);
   const phone = matchMedia('(pointer: coarse)').matches;
@@ -518,7 +527,7 @@ function showResult() {
       if (phone && shot) {
         const r = await shot;
         if (navigator.canShare && navigator.canShare({ files: [r.file] })) {
-          try { await navigator.share({ files: [r.file], title: '拉拉鉴定牌', text: '我在拉拉鉴定所测出来了：' + card.n + '（切勿当真）' }); return; }
+          try { await navigator.share({ files: [r.file], title: '拉拉鉴定牌', text: (who || '我') + '在拉拉鉴定所测出来了：' + card.n + '（切勿当真）' }); return; }
           catch (e) { if (e && e.name === 'AbortError') return; }
         }
         showShot(r.url); return;
