@@ -68,7 +68,7 @@ body {
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .opt { display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 12px; border: 2px solid var(--line); background: var(--cream2); cursor: pointer; }
 .opt b { font-family: var(--smiley); font-size: 30px; font-weight: 400; color: var(--ink); }
-.opt span { font-family: var(--pixel); font-size: 14px; color: var(--soft); }
+.opt > span { font-family: var(--pixel); font-size: 14px; color: var(--soft); }
 .opt.wide { grid-column: span 2; }
 .opt.wide b { font-family: var(--pixel); font-size: 17px; color: var(--rose); }
 .sheet .tip { font-size: 13.5px; color: var(--soft); text-align: center; margin-top: 10px; }
@@ -288,6 +288,10 @@ body {
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const q = new URLSearchParams(location.search);
+// 天干地支按五行上色，配色跟谷雨八字插件一样
+const WXC = { 木: '#1e8e47', 火: '#c93a28', 土: '#8a5416', 金: '#c29200', 水: '#1f6dbf' };
+const wxOf = ch => { const g = '甲乙丙丁戊己庚辛壬癸'.indexOf(ch); if (g >= 0) return '木火土金水'[Math.floor(g / 2)]; const z = '子丑寅卯辰巳午未申酉戌亥'.indexOf(ch); return z >= 0 ? '水土木木土火火土金金土水'[z] : ''; };
+const gz = str => [...String(str)].map(ch => wxOf(ch) ? '<span style="color:' + WXC[wxOf(ch)] + '">' + ch + '</span>' : esc(ch)).join('');
 const b = (q.get('b') || '').trim();
 
 const EV_NAMES = [
@@ -322,7 +326,7 @@ function showHome() {
       ['g', 'z'].map(t => {
         const v = pick[t][i];
         const txt = v === '?' ? '不知道' : v || (t === 'g' ? '天干' : '地支');
-        return '<button type="button" class="slot' + (v && v !== '?' ? '' : ' empty') + '" data-t="' + t + '" data-i="' + i + '">' + txt + '</button>';
+        return '<button type="button" class="slot' + (v && v !== '?' ? '' : ' empty') + '" data-t="' + t + '" data-i="' + i + '">' + (v && v !== '?' ? gz(v) : txt) + '</button>';
       }).join('') + '</div>'
     ).join('');
     $('picks').querySelectorAll('.slot').forEach(el => el.onclick = () => open(el.dataset.t, +el.dataset.i));
@@ -349,7 +353,7 @@ function showHome() {
   const open = (t, i) => {
     const list = options(t, i);
     $('sheetTitle').textContent = '选' + cols[i] + '的' + (t === 'g' ? '天干' : '地支') + '.exe';
-    $('sheetGrid').innerHTML = list.map(x => '<button type="button" class="opt" data-v="' + x + '"><b>' + x + '</b><span>' + (t === 'g' ? ganLab(x) : zhiLab(x)) + '</span></button>').join('') +
+    $('sheetGrid').innerHTML = list.map(x => '<button type="button" class="opt" data-v="' + x + '"><b>' + gz(x) + '</b><span>' + (t === 'g' ? ganLab(x) : zhiLab(x)) + '</span></button>').join('') +
       (i === 3 ? '<button type="button" class="opt wide" data-v="?"><b>不知道时辰</b></button>' : '');
     const other = t === 'g' ? pick.z[i] : pick.g[i];
     $('sheetTip').textContent = list.length < (t === 'g' ? 10 : 12) && other && other !== '?'
@@ -419,7 +423,7 @@ function showResult() {
 
   const pos = ['年', '月', '日', '时'];
   $('pillars').innerHTML = r.pillars.map((p, i) =>
-    '<div class="col' + (i === 2 ? ' day' : '') + '"><div class="pos">' + pos[i] + '柱</div><div class="gz">' + p[0] + '<br>' + p[1] + '</div><div class="ss">' + (i === 2 ? '日主' + r.dm : r.tg[i]) + '</div></div>'
+    '<div class="col' + (i === 2 ? ' day' : '') + '"><div class="pos">' + pos[i] + '柱</div><div class="gz">' + gz(p[0]) + '<br>' + gz(p[1]) + '</div><div class="ss">' + (i === 2 ? '日主' + r.dm : r.tg[i]) + '</div></div>'
   ).join('') + (r.hasHour ? '' : '<div class="col"><div class="pos">时柱</div><div class="gz">？<br>？</div><div class="ss">没有时辰</div></div>');
   const note = (q.get('n') || '').trim() || r.note;
   if (note) $('note').textContent = note; else $('noteWrap').classList.add('hidden');
@@ -450,7 +454,7 @@ function showResult() {
   $('ev').innerHTML = r.ev.map(x => '<li>' + esc(x) + '</li>').join('');
   $('yj').innerHTML = '<div class="row"><span class="tag yi">宜</span><span>' + esc(r.yi) + '</span></div><div class="row"><span class="tag ji">忌</span><span>' + esc(r.ji) + '</span></div>';
   $('match').innerHTML = '<em>本场速配</em>去找日支是<b>「' + r.match + '」</b>的姐妹，你们可能很搭哦';
-  $('foot').textContent = '送检八字  ' + r.pillars.join('  ');
+  $('foot').innerHTML = '送检八字  ' + r.pillars.map(gz).join('  ');
 
   fit();
   window.addEventListener('resize', fit);
