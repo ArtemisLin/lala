@@ -6,8 +6,8 @@
 <title>拉拉鉴定所</title>
 <style>
 /* 画风取自「谷雨 × HERSTORY」易拉宝：粉色双线窗口、奶油底、像素字、四角星、浅色网格 */
-@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2?v=20261022105739') format('woff2'); font-display: swap; }
-@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2?v=20261022105739') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Pixel'; src: url('ui/pixel.woff2?v=20261024100622') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Smiley'; src: url('ui/smiley.woff2?v=20261024100622') format('woff2'); font-display: swap; }
 :root {
   --bg: #fdf5f8;
   --grid: #f5dde7;
@@ -57,6 +57,26 @@ body {
 .how { color: var(--soft); font-size: 15px; line-height: 1.6; }
 .name-in { display: block; width: 100%; height: 52px; border: 2px solid var(--line); border-radius: 12px; background: var(--cream2); padding: 0 16px; font-family: var(--sans); font-size: 18px; color: var(--ink); outline: none; }
 .name-in::placeholder { color: #b3aec2; }
+/* 填生日排盘：样式照搬「交八字」网页 */
+.mtabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.mtab { height: 42px; border-radius: 21px; border: 2px solid var(--line); background: var(--cream2); color: var(--soft); font-family: var(--pixel); font-size: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.mtab.on { background: var(--rose); border-color: var(--rose); color: #fff; }
+.sublab { font-family: var(--pixel); font-size: 15px; color: var(--soft); margin: 14px 0 6px; }
+.sublab small { font-family: var(--sans); font-size: 12.5px; color: var(--mute); }
+.in, .sel { display: block; width: 100%; height: 48px; border: 2px solid var(--line); border-radius: 12px; background: var(--cream2); padding: 0 12px; font-family: var(--sans); font-size: 17px; color: var(--ink); outline: none; -webkit-appearance: none; appearance: none; }
+.sel { padding-right: 26px; background-image: linear-gradient(45deg, transparent 50%, var(--line) 50%), linear-gradient(135deg, var(--line) 50%, transparent 50%); background-position: calc(100% - 15px) 21px, calc(100% - 10px) 21px; background-size: 5px 5px; background-repeat: no-repeat; }
+.sel.ph { color: var(--mute); }
+.in::placeholder { color: #b3aec2; }
+.in:focus, .sel:focus { border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
+.row { display: grid; gap: 8px; }
+.row.r3 { grid-template-columns: 1.35fr 1fr 1fr; }
+.row.r2 { grid-template-columns: 1fr 1fr; }
+.pv { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; text-align: center; margin-top: 16px; }
+.pv .pos { font-family: var(--pixel); font-size: 14px; color: var(--soft); margin-bottom: 5px; }
+.pv .gz { border: 2px solid var(--line); border-radius: 10px; background: #fff; padding: 6px 0 4px; font-family: var(--smiley); font-size: 30px; line-height: 1.12; }
+.pv .gz.ph { color: var(--mute); font-family: var(--pixel); font-size: 18px; line-height: 2.5; background: var(--cream2); }
+.solar { color: var(--soft); font-size: 13px; margin-top: 8px; text-align: center; line-height: 1.5; }
+.born { text-align: center; color: var(--soft); font-size: 13.5px; margin-top: 8px; }
 .name-in:focus { border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
 .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; text-align: center; margin-top: 10px; }
 .picks .pos { font-family: var(--pixel); font-size: 15px; color: var(--soft); margin-bottom: 5px; }
@@ -237,24 +257,38 @@ body {
 </head>
 <body>
 
-<img class="deco" src="ui/star-y.png?v=20261022105739" alt="" style="left:2%;top:120px;width:46px">
-<img class="deco" src="ui/star-w.png?v=20261022105739" alt="" style="right:3%;top:60px;width:38px">
-<img class="deco" src="ui/star-w.png?v=20261022105739" alt="" style="right:6%;bottom:110px;width:30px">
+<img class="deco" src="ui/star-y.png?v=20261024100622" alt="" style="left:2%;top:120px;width:46px">
+<img class="deco" src="ui/star-w.png?v=20261024100622" alt="" style="right:3%;top:60px;width:38px">
+<img class="deco" src="ui/star-w.png?v=20261024100622" alt="" style="right:6%;bottom:110px;width:30px">
 
 <!-- 首页：选八字 -->
 <section class="home hidden" id="home">
   <div class="win">
     <div class="bar"><span>拉拉鉴定所.exe</span><span class="btns"><i></i><i></i><i></i></span></div>
     <div class="body">
-      <div class="hero"><img class="pc" src="ui/hero.webp?v=20261022105739" alt="" onerror="this.onerror=null;this.src='ui/computer.webp?v=20261022105739'"></div>
+      <div class="hero"><img class="pc" src="ui/hero.webp?v=20261024100622" alt="" onerror="this.onerror=null;this.src='ui/computer.webp?v=20261024100622'"></div>
       <h1 class="title">拉拉鉴定所</h1>
       <p class="sub">本鉴定仅供娱乐，<span class="warn">切勿当真</span></p>
       <div class="label">你的名字</div>
       <input class="name-in" id="nm" maxlength="10" placeholder="写上名字或昵称，会印在牌上" autocomplete="off">
       <div class="label">送检样本</div>
-      <p class="how">照着你的八字排盘（用哪个排盘 App 都可以），从年柱天干开始点字，选完会自动跳到下一格。点格子可以改。不知道时辰的，时柱点「不知道时辰」。</p>
-      <div class="picks" id="picks"></div>
-      <div class="kb hidden" id="kb"><div class="t" id="kbT"></div><div class="keys" id="keys"></div><div class="kb-foot" id="kbFoot"></div></div>
+      <div class="mtabs"><button type="button" class="mtab on" data-m="birth">填生日排盘</button><button type="button" class="mtab" data-m="gz">直接选八字</button></div>
+      <div id="mBirth">
+        <div class="sublab">出生日期 <small>公历</small></div>
+        <div class="row r3"><select class="sel" id="by"></select><select class="sel" id="bm"></select><select class="sel" id="bd"></select></div>
+        <div class="sublab">出生时间</div>
+        <div class="row r2"><select class="sel" id="bh"></select><select class="sel" id="bmi"></select></div>
+        <div class="sublab">出生地 <small>选到市，按当地的太阳时排盘</small></div>
+        <div class="row r2"><select class="sel" id="prov"></select><select class="sel" id="city"></select></div>
+        <input class="in hidden" id="abroad" maxlength="30" placeholder="哪个城市？比如：香港、东京" style="margin-top:8px">
+        <div class="pv" id="pv"></div>
+        <div class="solar" id="pvNote"></div>
+      </div>
+      <div id="mGz" class="hidden">
+        <p class="how">照着你的八字排盘（用哪个排盘 App 都可以），从年柱天干开始点字，选完会自动跳到下一格。点格子可以改。不知道时辰的，时柱点「不知道时辰」。</p>
+        <div class="picks" id="picks"></div>
+        <div class="kb hidden" id="kb"><div class="t" id="kbT"></div><div class="keys" id="keys"></div><div class="kb-foot" id="kbFoot"></div></div>
+      </div>
       <div class="acts"><button class="btn big" id="go">送去鉴定 ▶</button></div>
       <p class="err" id="err"></p>
       <div id="histWrap" class="hidden">
@@ -274,6 +308,7 @@ body {
       <div class="head"><b>谷雨悟道 · 拉拉鉴定所</b><span>拉拉概率鉴定报告 · 本鉴定仅供娱乐，<span class="warn">切勿当真</span></span></div>
       <div class="label" id="sampleLab">送检样本</div>
       <div class="pillars" id="pillars"></div>
+      <div class="born hidden" id="born"></div>
       <div id="noteWrap"><div class="label">送检备注</div><div class="note" id="note"></div></div>
       <div class="label">物证清单</div>
       <ul class="evlist" id="evlist"></ul>
@@ -291,8 +326,8 @@ body {
           <div class="tb"><span id="num"></span><span class="btns"><i></i><i></i><i></i></span></div>
           <div class="badge">隐藏款</div>
           <div class="art" id="art"></div>
-          <img class="st1" src="ui/star-y.png?v=20261022105739" alt="">
-          <img class="st2" src="ui/star-w.png?v=20261022105739" alt="">
+          <img class="st1" src="ui/star-y.png?v=20261024100622" alt="">
+          <img class="st2" src="ui/star-w.png?v=20261024100622" alt="">
           <div class="seal"><b>鉴定专用</b><i>仅供娱乐</i></div>
           <div class="lower">
             <div class="ttl-row"><div class="ttl" id="ttl"></div><span class="rar" id="rar"></span></div>
@@ -309,13 +344,13 @@ body {
             </div>
             <div class="bottom">
               <div><div class="match" id="match"></div><div class="foot" id="foot"></div></div>
-              <div class="qr"><img src="ui/qr.png?v=20261022105739" alt="扫码测测你"><span>扫码测测你</span></div>
+              <div class="qr"><img src="ui/qr.png?v=20261024100622" alt="扫码测测你"><span>扫码测测你</span></div>
             </div>
           </div>
         </div></div>
         <div class="back"><div class="card">
           <div class="frame"></div>
-          <div class="mid"><img src="ui/star-y.png?v=20261022105739" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
+          <div class="mid"><img src="ui/star-y.png?v=20261024100622" alt=""><b>拉拉鉴定所</b><span id="backHint">鉴定中……</span></div>
         </div></div>
       </div>
     </div>
@@ -329,9 +364,10 @@ body {
 
 <div class="taskbar"><span class="start">✦ START</span><span class="tab" id="tab1">拉拉鉴定所.exe</span><span class="tab extra hidden" id="tab2">鉴定牌.exe</span><span class="clock" id="clock"></span></div>
 
-<script src="html2canvas.min.js?v=20261022105739"></script>
-<script src="bazi-core.js?v=20261022105739"></script>
-<script src="lala.js?v=20261022105739"></script>
+<script src="html2canvas.min.js?v=20261024100622"></script>
+<script src="bazi-core.js?v=20261024100622"></script>
+<script src="regions.js?v=20261024100622"></script>
+<script src="lala.js?v=20261024100622"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -367,7 +403,7 @@ function showHist() {
   $('hist').querySelectorAll('.hi').forEach(el => el.onclick = e => {
     const k = +el.dataset.k, h = loadHist()[k];
     if (e.target.dataset.del !== undefined) { const l = loadHist(); l.splice(k, 1); saveHist(l); showHist(); return; }
-    if (h) location.search = '?b=' + encodeURIComponent(h.b) + (h.name ? '&name=' + encodeURIComponent(h.name) : '');
+    if (h) location.search = h.qs || ('?b=' + encodeURIComponent(h.b) + (h.name ? '&name=' + encodeURIComponent(h.name) : ''));
   });
   $('histClear').onclick = () => { saveHist([]); showHist(); };
 }
@@ -454,7 +490,92 @@ function showHome() {
   }
   render();
 
+  // ---------- 填生日排盘（照搬「交八字」网页：公历年月日、几点几分、省市；按出生地太阳时排） ----------
+  let mode = 'birth';
+  document.querySelectorAll('.mtab').forEach(el => el.onclick = () => {
+    mode = el.dataset.m;
+    document.querySelectorAll('.mtab').forEach(x => x.classList.toggle('on', x === el));
+    $('mBirth').classList.toggle('hidden', mode !== 'birth');
+    $('mGz').classList.toggle('hidden', mode !== 'gz');
+    $('err').textContent = '';
+  });
+  const p2 = n => String(n).padStart(2, '0');
+  const opt = (v, t) => '<option value="' + v + '">' + t + '</option>';
+  (function () {
+    const thisYear = new Date().getFullYear();
+    let h = opt('', '年'); for (let i = thisYear; i >= 1940; i--) h += opt(i, i + ' 年'); $('by').innerHTML = h;
+    h = opt('', '月'); for (let i = 1; i <= 12; i++) h += opt(i, i + ' 月'); $('bm').innerHTML = h;
+    const days = () => {
+      const keep = $('bd').value, n = $('by').value && $('bm').value ? new Date(+$('by').value, +$('bm').value, 0).getDate() : 31;
+      let s = opt('', '日'); for (let i = 1; i <= n; i++) s += opt(i, i + ' 日');
+      $('bd').innerHTML = s; if (keep && +keep <= n) $('bd').value = keep;
+    };
+    days(); $('by').addEventListener('change', days); $('bm').addEventListener('change', days);
+    const SHI = '子丑寅卯辰巳午未申酉戌亥';
+    h = opt('', '几点'); for (let i = 0; i < 24; i++) h += opt(i, p2(i) + ' 点 · ' + SHI[Math.floor((i + 1) / 2) % 12] + '时'); $('bh').innerHTML = h;
+    h = opt('', '几分'); for (let i = 0; i < 60; i++) h += opt(i, p2(i) + ' 分'); $('bmi').innerHTML = h;
+    h = opt('', '省份'); REGIONS.forEach((pr, i) => { h += opt(i, pr.n); }); $('prov').innerHTML = h + opt('x', '港澳台 / 海外');
+  })();
+  const fillCity = () => {
+    const pv = $('prov').value, isX = pv === 'x';
+    $('abroad').classList.toggle('hidden', !isX);
+    $('city').classList.toggle('hidden', isX);
+    $('city').innerHTML = pv === '' || isX ? opt('', '城市') : opt('', '城市') + REGIONS[+pv].c.map((c, i) => opt(i, c.n)).join('');
+  };
+  $('prov').addEventListener('change', fillCity); fillCity();
+  document.querySelectorAll('#mBirth select').forEach(el => { const f = () => el.classList.toggle('ph', el.value === ''); el.addEventListener('change', f); f(); });
+  // 出生地 → 经度（城市取下辖区县的平均经度，跟交八字网页一样）
+  const place = () => {
+    const pv = $('prov').value;
+    if (pv === '') return null;
+    if (pv === 'x') { const t = $('abroad').value.trim(); return t ? { place: '港澳台/海外·' + t, lon: null } : null; }
+    if ($('city').value === '') return null;
+    const pr = REGIONS[+pv], c = pr.c[+$('city').value];
+    const ls = c.a.filter(a => a.g).map(a => a.g[0]);
+    return { place: pr.n + '·' + c.n, lon: ls.length ? Math.round(ls.reduce((x, y) => x + y, 0) / ls.length * 1000) / 1000 : null };
+  };
+  const readBirth = () => {
+    const y = $('by').value, m = $('bm').value, d = $('bd').value, hh = $('bh').value, mi = $('bmi').value || '0';
+    if (!y || !m || !d) return { need: '出生日期还没选完' };
+    if (hh === '') return { need: '选一下几点出生' };
+    const pl = place();
+    if (!pl) return { need: '出生地要选到市' };
+    const clock = { y: +y, m: +m, d: +d, hh: +hh, mi: +mi };
+    const r = BaziCore.computeChart({ clock, gender: '坤', ...(pl.lon != null ? { lon: pl.lon, trueSolar: true } : { trueSolar: false }), ziShiSect: 'wenzhen' });
+    return { clock, ...pl, pillars: [r.pillars.year, r.pillars.month, r.pillars.day, r.pillars.hour],
+      solar: pl.lon != null ? p2(r.trueSolarClock.hh) + ':' + p2(r.trueSolarClock.mi) : '', dst: BaziCore.inChinaDst(clock) };
+  };
+  const preview = () => {
+    let f = null; try { f = readBirth(); } catch (e) {}
+    const POS = ['年柱', '月柱', '日柱', '时柱'];
+    if (!f || f.need) {
+      $('pv').innerHTML = POS.map(x => '<div><div class="pos">' + x + '</div><div class="gz ph">？</div></div>').join('');
+      $('pvNote').textContent = '日期、时间、出生地都选好，八字自己出来';
+      return;
+    }
+    $('pv').innerHTML = f.pillars.map((g2, i) => '<div><div class="pos">' + POS[i] + '</div><div class="gz">' + [...g2].map(ch => gz(ch)).join('<br>') + '</div></div>').join('');
+    const notes = [];
+    notes.push(f.solar ? '按' + f.place.split('·').pop() + '的太阳时 ' + f.solar + ' 排' : '海外出生，按钟表时间排');
+    if (f.dst) notes.push('1986–1991 年夏天出生的，当年有夏令时，家里记的时间可能早了一小时');
+    $('pvNote').textContent = notes.join('；');
+  };
+  ['by', 'bm', 'bd', 'bh', 'bmi', 'prov', 'city'].forEach(id => $(id).addEventListener('change', preview));
+  $('abroad').addEventListener('input', preview);
+  preview();
+
+  const goBirth = () => {
+    const nm = $('nm').value.trim();
+    if (!nm) { $('err').textContent = '先写上你的名字或昵称，会印在牌上'; $('nm').focus(); return; }
+    const f = readBirth();
+    if (f.need) { $('err').textContent = f.need; return; }
+    const c = f.clock;
+    location.search = '?b=' + encodeURIComponent(f.pillars.join('')) + '&name=' + encodeURIComponent(nm) +
+      '&d=' + c.y + '-' + p2(c.m) + '-' + p2(c.d) + '&t=' + p2(c.hh) + ':' + p2(c.mi) +
+      (f.lon != null ? '&lon=' + f.lon : '') + '&at=' + encodeURIComponent(f.place);
+  };
+
   $('go').onclick = () => {
+    if (mode === 'birth') return goBirth();
     let s = '';
     for (let i = 0; i < 4; i++) {
       if (i === 3 && (g[3] === '?' || z[3] === '?')) break;
@@ -486,8 +607,20 @@ function dayunOf(bz) {
   return null;
 }
 
+// 用生日排的：按真实出生时间（出生地太阳时）排大运，不用倒推
+function dayunExact() {
+  try {
+    const d = q.get('d'), t = q.get('t');
+    if (!window.BaziCore || !d || !t) return null;
+    const [y, m, dd] = d.split('-').map(Number), [hh, mi] = t.split(':').map(Number);
+    const lon = q.get('lon') ? +q.get('lon') : null;
+    const c = BaziCore.computeChart({ clock: { y, m, d: dd, hh, mi }, gender: '坤', ...(lon != null ? { lon, trueSolar: true } : { trueSolar: false }), ziShiSect: 'wenzhen' });
+    return c.daYun.map(x => ({ gz: x.ganZhi, startYear: x.startYear }));
+  } catch (e) { return null; }
+}
+
 function showResult() {
-  const dy = dayunOf(b);
+  const dy = dayunExact() || dayunOf(b);
   const r = Lala.judge(b, '女', { dayun: dy, year: new Date().getFullYear() });
   if (r.error) { showHome(); $('err').textContent = '链接里的八字看不懂，请在上面重新选一次'; return; }
   $('result').classList.remove('hidden');
@@ -499,6 +632,7 @@ function showResult() {
   $('pillars').innerHTML = r.pillars.map((p, i) =>
     '<div class="col' + (i === 2 ? ' day' : '') + '"><div class="pos">' + pos[i] + '柱</div><div class="gz">' + gz(p[0]) + '<br>' + gz(p[1]) + '</div><div class="ss">' + (i === 2 ? '日主' + r.dm : r.tg[i]) + '</div></div>'
   ).join('') + (r.hasHour ? '' : '<div class="col"><div class="pos">时柱</div><div class="gz">？<br>？</div><div class="ss">没有时辰</div></div>');
+  if (q.get('d')) { $('born').classList.remove('hidden'); $('born').textContent = q.get('d').replace(/-/g, '.') + ' ' + (q.get('t') || '') + (q.get('at') ? ' · ' + q.get('at') : ''); }
   const note = (q.get('n') || '').trim() || r.note;
   if (note) $('note').textContent = note; else $('noteWrap').classList.add('hidden');
   $('evlist').innerHTML = EV_NAMES.map(([k, n]) => {
@@ -511,7 +645,8 @@ function showResult() {
   {
     const name = (q.get('name') || '').trim().slice(0, 10);
     const l = loadHist().filter(h => !(h.b === r.pillars.join('') && (h.name || '') === name));
-    l.unshift({ b: r.pillars.join(''), name, card: card.n, pct: c === 13 ? '50' : r.pct, tier: r.rarity.tier, t: Date.now() });
+    const keep = new URLSearchParams(location.search); keep.delete('open'); keep.delete('only');
+    l.unshift({ b: r.pillars.join(''), name, card: card.n, pct: c === 13 ? '50' : r.pct, tier: r.rarity.tier, t: Date.now(), qs: '?' + keep.toString() });
     saveHist(l);
   }
   if (c === 0) $('card').classList.add('gold');
@@ -526,7 +661,7 @@ function showResult() {
   const img = new Image();
   img.onload = () => { $('art').innerHTML = ''; $('art').appendChild(img); };
   img.onerror = () => { $('art').innerHTML = '<div class="ph">' + esc(card.n) + '</div>'; };
-  img.src = 'art/' + String(c).padStart(2, '0') + '.webp?v=20261022105739';
+  img.src = 'art/' + String(c).padStart(2, '0') + '.webp?v=20261024100622';
 
   const ttl = $('ttl');
   ttl.innerHTML = esc(card.n) + (card.s ? '<small>' + esc(card.s) + '</small>' : '');
